@@ -5,8 +5,6 @@
 .Rapp.history
 
 # Build files
-.Rbuildignore
-..Rcheck
 *.tar.gz
 
 # Session Data files
@@ -42,7 +40,5 @@ vignettes/*.pdf
 # swagger files
 .swagger-codegen
 swagger.json
-.travis.yml
-
 
 *.DS_Store

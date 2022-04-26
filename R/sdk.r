@@ -116,6 +116,30 @@ AmberClient <- R6::R6Class(
 
       }
       c(TRUE, NULL)
+    }, callApi = function(url, method, queryParams, headerParams, body, ...){
+        headers <- httr::add_headers(headerParams)
+
+        if (method == "GET") {
+            httr::GET(url, queryParams, headers, ...)
+        }
+        else if (method == "POST") {
+            httr::POST(url, queryParams, headers, body = body, ...)
+        }
+        else if (method == "PUT") {
+            httr::PUT(url, queryParams, headers, body = body, ...)
+        }
+        else if (method == "PATCH") {
+            httr::PATCH(url, queryParams, headers, body = body, ...)
+        }
+        else if (method == "HEAD") {
+            httr::HEAD(url, queryParams, headers, ...)
+        }
+        else if (method == "DELETE") {
+            httr::DELETE(url, queryParams, headers, ...)
+        }
+        else {
+            stop("http method must be `GET`, `HEAD`, `OPTIONS`, `POST`, `PATCH`, `PUT` or `DELETE`.")
+        }
     }
   ),
   public = list(
@@ -626,30 +650,6 @@ AmberClient <- R6::R6Class(
             Response$new("API server error", resp)
         }
 
-    }, callApi = function(url, method, queryParams, headerParams, body, ...){
-        headers <- httr::add_headers(headerParams)
-
-        if (method == "GET") {
-            httr::GET(url, queryParams, headers, ...)
-        }
-        else if (method == "POST") {
-            httr::POST(url, queryParams, headers, body = body, ...)
-        }
-        else if (method == "PUT") {
-            httr::PUT(url, queryParams, headers, body = body, ...)
-        }
-        else if (method == "PATCH") {
-            httr::PATCH(url, queryParams, headers, body = body, ...)
-        }
-        else if (method == "HEAD") {
-            httr::HEAD(url, queryParams, headers, ...)
-        }
-        else if (method == "DELETE") {
-            httr::DELETE(url, queryParams, headers, ...)
-        }
-        else {
-            stop("http method must be `GET`, `HEAD`, `OPTIONS`, `POST`, `PATCH`, `PUT` or `DELETE`.")
-        }
     }
   )
 )
