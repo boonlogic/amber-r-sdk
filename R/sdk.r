@@ -65,14 +65,34 @@
 #' }
 #'
 #' @export
-DefaultApi <- R6::R6Class("DefaultApi", public = list(userAgent = "Swagger-Codegen/1.0.0/r",
+DefaultApi <- R6::R6Class("DefaultApi", public = list(userAgent = "Boon Logic / amber-r-sdk / requests",
     apiClient = NULL, initialize = function(apiClient) {
         if (!missing(apiClient)) {
             self$apiClient <- apiClient
         } else {
             self$apiClient <- ApiClient$new()
         }
-    }, delete_sensor = function(sensor_id, ...) {
+    }, list_sensors = function(...) {
+        args <- list(...)
+        queryParams <- list()
+        headerParams <- character()
+
+        urlPath <- "/sensors"
+        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+            method = "GET", queryParams = queryParams, headerParams = headerParams,
+            body = body, ...)
+
+        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
+            returnObject <- GetSensorsResponse$new()
+            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+            Response$new(returnObject, resp)
+        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
+            Response$new("API client error", resp)
+        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
+            Response$new("API server error", resp)
+        }
+
+    }, get_sensor = function(sensor_id, ...) {
         args <- list(...)
         queryParams <- list()
         headerParams <- character()
@@ -83,11 +103,11 @@ DefaultApi <- R6::R6Class("DefaultApi", public = list(userAgent = "Swagger-Codeg
 
         urlPath <- "/sensor"
         resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
-            method = "DELETE", queryParams = queryParams, headerParams = headerParams,
+            method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
         if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- Error$new()
+            returnObject <- GetSensorResponse$new()
             result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
             Response$new(returnObject, resp)
         } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
@@ -96,7 +116,33 @@ DefaultApi <- R6::R6Class("DefaultApi", public = list(userAgent = "Swagger-Codeg
             Response$new("API server error", resp)
         }
 
-    }, get_amber_summary = function(sensor_id, ...) {
+    }, create_sensor = function(body, ...) {
+        args <- list(...)
+        queryParams <- list()
+        headerParams <- character()
+
+        if (!missing(body)) {
+            body <- body$toJSONString()
+        } else {
+            body <- NULL
+        }
+
+        urlPath <- "/sensor"
+        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+            method = "POST", queryParams = queryParams, headerParams = headerParams,
+            body = body, ...)
+
+        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
+            returnObject <- PostSensorResponse$new()
+            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+            Response$new(returnObject, resp)
+        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
+            Response$new("API client error", resp)
+        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
+            Response$new("API server error", resp)
+        }
+
+    }, update_label = function(body, sensor_id, ...) {
         args <- list(...)
         queryParams <- list()
         headerParams <- character()
@@ -105,13 +151,109 @@ DefaultApi <- R6::R6Class("DefaultApi", public = list(userAgent = "Swagger-Codeg
             headerParams["sensorId"] <- sensor_id
         }
 
-        urlPath <- "/__summary"
+        if (!missing(body)) {
+            body <- body$toJSONString()
+        } else {
+            body <- NULL
+        }
+
+        urlPath <- "/sensor"
         resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
-            method = "GET", queryParams = queryParams, headerParams = headerParams,
+            method = "PUT", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
         if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- GetSummaryResponse$new()
+            returnObject <- PutSensorResponse$new()
+            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+            Response$new(returnObject, resp)
+        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
+            Response$new("API client error", resp)
+        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
+            Response$new("API server error", resp)
+        }
+
+    }, configure_sensor = function(body, sensor_id, ...) {
+        args <- list(...)
+        queryParams <- list()
+        headerParams <- character()
+
+        if (!missing(sensor_id)) {
+            headerParams["sensorId"] <- sensor_id
+        }
+
+        if (!missing(body)) {
+            body <- body$toJSONString()
+        } else {
+            body <- NULL
+        }
+
+        urlPath <- "/config"
+        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+            method = "POST", queryParams = queryParams, headerParams = headerParams,
+            body = body, ...)
+
+        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
+            returnObject <- PostConfigResponse$new()
+            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+            Response$new(returnObject, resp)
+        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
+            Response$new("API client error", resp)
+        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
+            Response$new("API server error", resp)
+        }
+
+    }, configure_fusion = function(body, sensor_id, ...) {
+        args <- list(...)
+        queryParams <- list()
+        headerParams <- character()
+
+        if (!missing(sensor_id)) {
+            headerParams["sensorId"] <- sensor_id
+        }
+
+        if (!missing(body)) {
+            body <- body$toJSONString()
+        } else {
+            body <- NULL
+        }
+
+        urlPath <- "/config"
+        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+            method = "PUT", queryParams = queryParams, headerParams = headerParams,
+            body = body, ...)
+
+        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
+            returnObject <- PutConfigResponse$new()
+            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+            Response$new(returnObject, resp)
+        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
+            Response$new("API client error", resp)
+        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
+            Response$new("API server error", resp)
+        }
+
+    }, enable_learning = function(body, sensor_id, ...) {
+        args <- list(...)
+        queryParams <- list()
+        headerParams <- character()
+
+        if (!missing(sensor_id)) {
+            headerParams["sensorId"] <- sensor_id
+        }
+
+        if (!missing(body)) {
+            body <- body$toJSONString()
+        } else {
+            body <- NULL
+        }
+
+        urlPath <- "/config"
+        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+            method = "PUT", queryParams = queryParams, headerParams = headerParams,
+            body = body, ...)
+
+        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
+            returnObject <- PutConfigResponse$new()
             result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
             Response$new(returnObject, resp)
         } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
@@ -144,7 +286,145 @@ DefaultApi <- R6::R6Class("DefaultApi", public = list(userAgent = "Swagger-Codeg
             Response$new("API server error", resp)
         }
 
-    }, get_pretrain = function(sensor_id, ...) {
+    }, delete_sensor = function(sensor_id, ...) {
+        args <- list(...)
+        queryParams <- list()
+        headerParams <- character()
+
+        if (!missing(sensor_id)) {
+            headerParams["sensorId"] <- sensor_id
+        }
+
+        urlPath <- "/sensor"
+        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+            method = "DELETE", queryParams = queryParams, headerParams = headerParams,
+            body = body, ...)
+
+        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
+            returnObject <- Error$new()
+            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+            Response$new(returnObject, resp)
+        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
+            Response$new("API client error", resp)
+        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
+            Response$new("API server error", resp)
+        }
+
+    }, stream_sensor = function(body, sensor_id, ...) {
+        args <- list(...)
+        queryParams <- list()
+        headerParams <- character()
+
+        if (!missing(sensor_id)) {
+            headerParams["sensorId"] <- sensor_id
+        }
+
+        if (!missing(body)) {
+            body <- body$toJSONString()
+        } else {
+            body <- NULL
+        }
+
+        urlPath <- "/stream"
+        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+            method = "POST", queryParams = queryParams, headerParams = headerParams,
+            body = body, ...)
+
+        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
+            returnObject <- PostStreamResponse$new()
+            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+            Response$new(returnObject, resp)
+        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
+            Response$new("API client error", resp)
+        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
+            Response$new("API server error", resp)
+        }
+
+    }, stream_fusion = function(body, sensor_id, ...) {
+        args <- list(...)
+        queryParams <- list()
+        headerParams <- character()
+
+        if (!missing(sensor_id)) {
+            headerParams["sensorId"] <- sensor_id
+        }
+
+        if (!missing(body)) {
+            body <- body$toJSONString()
+        } else {
+            body <- NULL
+        }
+
+        urlPath <- "/stream"
+        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+            method = "PUT", queryParams = queryParams, headerParams = headerParams,
+            body = body, ...)
+
+        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
+            returnObject <- PutStreamResponse$new()
+            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+            Response$new(returnObject, resp)
+        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
+            Response$new("API client error", resp)
+        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
+            Response$new("API server error", resp)
+        }
+
+    }, get_status = function(sensor_id, ...) {
+        args <- list(...)
+        queryParams <- list()
+        headerParams <- character()
+
+        if (!missing(sensor_id)) {
+            headerParams["sensorId"] <- sensor_id
+        }
+
+        urlPath <- "/status"
+        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+            method = "GET", queryParams = queryParams, headerParams = headerParams,
+            body = body, ...)
+
+        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
+            returnObject <- GetStatusResponse$new()
+            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+            Response$new(returnObject, resp)
+        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
+            Response$new("API client error", resp)
+        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
+            Response$new("API server error", resp)
+        }
+
+    }, pretrain_sensor = function(body, sensor_id, ...) {
+        args <- list(...)
+        queryParams <- list()
+        headerParams <- character()
+
+        if (!missing(sensor_id)) {
+            headerParams["sensorId"] <- sensor_id
+        }
+
+        if (!missing(body)) {
+            body <- body$toJSONString()
+        } else {
+            body <- NULL
+        }
+
+        urlPath <- "/pretrain"
+        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+            method = "POST", queryParams = queryParams, headerParams = headerParams,
+            body = body, ...)
+
+        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
+            returnObject <- PostPretrainResponse$new()
+            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+            Response$new(returnObject, resp)
+        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
+            Response$new("API client error", resp)
+        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
+            Response$new("API server error", resp)
+        }
+
+    }, get_pretrain_state = function(sensor_id, ...) {
         args <- list(...)
         queryParams <- list()
         headerParams <- character()
@@ -200,74 +480,6 @@ DefaultApi <- R6::R6Class("DefaultApi", public = list(userAgent = "Swagger-Codeg
             Response$new("API server error", resp)
         }
 
-    }, get_sensor = function(sensor_id, ...) {
-        args <- list(...)
-        queryParams <- list()
-        headerParams <- character()
-
-        if (!missing(sensor_id)) {
-            headerParams["sensorId"] <- sensor_id
-        }
-
-        urlPath <- "/sensor"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
-            method = "GET", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
-
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- GetSensorResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
-
-    }, get_sensors = function(...) {
-        args <- list(...)
-        queryParams <- list()
-        headerParams <- character()
-
-        urlPath <- "/sensors"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
-            method = "GET", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
-
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- GetSensorsResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
-
-    }, get_status = function(sensor_id, ...) {
-        args <- list(...)
-        queryParams <- list()
-        headerParams <- character()
-
-        if (!missing(sensor_id)) {
-            headerParams["sensorId"] <- sensor_id
-        }
-
-        urlPath <- "/status"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
-            method = "GET", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
-
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- GetStatusResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
-
     }, get_version = function(...) {
         args <- list(...)
         queryParams <- list()
@@ -280,36 +492,6 @@ DefaultApi <- R6::R6Class("DefaultApi", public = list(userAgent = "Swagger-Codeg
 
         if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
             returnObject <- Version$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
-
-    }, post_config = function(body, sensor_id, ...) {
-        args <- list(...)
-        queryParams <- list()
-        headerParams <- character()
-
-        if (!missing(sensor_id)) {
-            headerParams["sensorId"] <- sensor_id
-        }
-
-        if (!missing(body)) {
-            body <- body$toJSONString()
-        } else {
-            body <- NULL
-        }
-
-        urlPath <- "/config"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
-            method = "POST", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
-
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- PostConfigResponse$new()
             result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
             Response$new(returnObject, resp)
         } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
@@ -336,182 +518,6 @@ DefaultApi <- R6::R6Class("DefaultApi", public = list(userAgent = "Swagger-Codeg
 
         if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
             returnObject <- PostAuth2Response$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
-
-    }, post_pretrain = function(body, sensor_id, ...) {
-        args <- list(...)
-        queryParams <- list()
-        headerParams <- character()
-
-        if (!missing(sensor_id)) {
-            headerParams["sensorId"] <- sensor_id
-        }
-
-        if (!missing(body)) {
-            body <- body$toJSONString()
-        } else {
-            body <- NULL
-        }
-
-        urlPath <- "/pretrain"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
-            method = "POST", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
-
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- PostPretrainResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
-
-    }, post_sensor = function(body, ...) {
-        args <- list(...)
-        queryParams <- list()
-        headerParams <- character()
-
-        if (!missing(body)) {
-            body <- body$toJSONString()
-        } else {
-            body <- NULL
-        }
-
-        urlPath <- "/sensor"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
-            method = "POST", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
-
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- PostSensorResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
-
-    }, post_stream = function(body, sensor_id, ...) {
-        args <- list(...)
-        queryParams <- list()
-        headerParams <- character()
-
-        if (!missing(sensor_id)) {
-            headerParams["sensorId"] <- sensor_id
-        }
-
-        if (!missing(body)) {
-            body <- body$toJSONString()
-        } else {
-            body <- NULL
-        }
-
-        urlPath <- "/stream"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
-            method = "POST", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
-
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- PostStreamResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
-
-    }, put_config = function(body, sensor_id, ...) {
-        args <- list(...)
-        queryParams <- list()
-        headerParams <- character()
-
-        if (!missing(sensor_id)) {
-            headerParams["sensorId"] <- sensor_id
-        }
-
-        if (!missing(body)) {
-            body <- body$toJSONString()
-        } else {
-            body <- NULL
-        }
-
-        urlPath <- "/config"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
-            method = "PUT", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
-
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- PutConfigResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
-
-    }, put_sensor = function(body, sensor_id, ...) {
-        args <- list(...)
-        queryParams <- list()
-        headerParams <- character()
-
-        if (!missing(sensor_id)) {
-            headerParams["sensorId"] <- sensor_id
-        }
-
-        if (!missing(body)) {
-            body <- body$toJSONString()
-        } else {
-            body <- NULL
-        }
-
-        urlPath <- "/sensor"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
-            method = "PUT", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
-
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- PutSensorResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
-
-    }, put_stream = function(body, sensor_id, ...) {
-        args <- list(...)
-        queryParams <- list()
-        headerParams <- character()
-
-        if (!missing(sensor_id)) {
-            headerParams["sensorId"] <- sensor_id
-        }
-
-        if (!missing(body)) {
-            body <- body$toJSONString()
-        } else {
-            body <- NULL
-        }
-
-        urlPath <- "/stream"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
-            method = "PUT", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
-
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- PutStreamResponse$new()
             result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
             Response$new(returnObject, resp)
         } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
