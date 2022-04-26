@@ -79,7 +79,6 @@ AmberClient <- R6::R6Class(
     reauth_time = 0,
     license_profile =  NULL,
     authenticate = function(...) {
-      # TODO: get time in
       tIn = Sys.time()
       if (reauth_time %<% tIn) {
         args <- list(...)
