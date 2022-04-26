@@ -77,7 +77,33 @@ AmberClient <- R6::R6Class(
     timeout = 360,
     token = NULL,
     reauth_time = 0,
-    license_profile =  NULL
+    license_profile =  NULL,
+    authenticate = function(...) {
+      # TODO: get time in
+      tIn = Sys.time()
+      if (reauth_time %<% tIn) {
+        args <- list(...)
+        queryParams <- list()
+        headerParams <- character()
+
+        urlPath <- "/oauth2"
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["oauth-server"]], urlPath),
+            method = "POST", queryParams = queryParams, headerParams = headerParams,
+            body = body, ...)
+
+        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
+            returnObject <- PostSensorResponse$new()
+            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+            Response$new(returnObject, resp)
+        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
+            Response$new("API client error", resp)
+        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
+            Response$new("API server error", resp)
+        }
+      }
+      c(TRUE, NULL)
+
+    }
   ),
   public = list(
     license_id = NULL,
@@ -165,7 +191,7 @@ AmberClient <- R6::R6Class(
         headerParams <- character()
 
         urlPath <- "/sensors"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
@@ -189,7 +215,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/sensor"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
@@ -215,7 +241,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/sensor"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "POST", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
@@ -245,7 +271,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/sensor"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "PUT", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
@@ -275,7 +301,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/config"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "POST", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
@@ -305,7 +331,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/config"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "PUT", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
@@ -335,7 +361,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/config"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "PUT", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
@@ -359,7 +385,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/config"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
@@ -383,7 +409,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/sensor"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "DELETE", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
@@ -413,7 +439,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/stream"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "POST", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
@@ -443,7 +469,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/stream"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "PUT", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
@@ -467,7 +493,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/status"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
@@ -497,7 +523,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/pretrain"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "POST", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
@@ -521,7 +547,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/pretrain"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
@@ -553,7 +579,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/rootCause"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
@@ -573,7 +599,7 @@ AmberClient <- R6::R6Class(
         headerParams <- character()
 
         urlPath <- "/version"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
@@ -599,7 +625,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/oauth2"
-        resp <- self$apiClient$callApi(url = paste0(self$apiClient$basePath, urlPath),
+        resp <- self$apiClient$callApi(url = paste0(self$license_profile[["server"]], urlPath),
             method = "POST", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
