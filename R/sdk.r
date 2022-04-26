@@ -21,7 +21,7 @@
 #' get_config Get the current configuration of a sensor instance
 #'
 #'
-#' get_pretrain Get status of pretrain operation
+#' get_pretrain_state Get status of pretrain operation
 #'
 #'
 #' get_root_cause Get root cause analysis information from a sensor
@@ -30,7 +30,7 @@
 #' get_sensor Get basic information about a sensor instance
 #'
 #'
-#' get_sensors List all sensors for this user
+#' list_sensors List all sensors for this user
 #'
 #'
 #' get_status Get analytic information from a sensor
@@ -39,39 +39,126 @@
 #' get_version Retrieves API version information
 #'
 #'
-#' post_config Apply configuration to a sensor instance
+#' configure_sensor Apply configuration to a sensor instance
 #'
 #'
 #' post_oauth2 Request a bearer token using Amber account credentials
 #'
 #'
-#' post_pretrain Pretrain a sensor using historical data
+#' pretrain_sensor Pretrain a sensor using historical data
 #'
 #'
-#' post_sensor Create a new a sensor instance
+#' create_sensor Create a new a sensor instance
 #'
 #'
-#' post_stream Stream data to a sensor
+#' stream_sensor Stream data to a sensor
 #'
 #'
-#' put_config Update configuration for a sensor instance
+#' configure_fusion Update configuration for a sensor instance for fusion data
 #'
 #'
-#' put_sensor Update label for a sensor instance
+#' enable_learning set new graduation requirements and turns on learning
 #'
 #'
-#' put_stream Stream data to a sensor fusion vector
+#' update_label Update label for a sensor instance
+#'
+#'
+#' stream_fusion Stream data to a sensor fusion vector
 #'
 #' }
 #'
 #' @export
-DefaultApi <- R6::R6Class("DefaultApi", public = list(userAgent = "Boon Logic / amber-r-sdk / requests",
-    apiClient = NULL, initialize = function(apiClient) {
-        if (!missing(apiClient)) {
-            self$apiClient <- apiClient
+AmberClient <- R6::R6Class(
+  "AmberClient", 
+  private = list(
+    userAgent = "Boon Logic / amber-r-sdk / requests",
+    verify = TRUE,
+    cert = NULL,
+    timeout = 360,
+    token = NULL,
+    reauth_time = 0,
+    license_profile =  NULL
+  ),
+  public = list(
+    license_id = NULL,
+    license_file = NULL,
+    initialize = function(license_id = "default", license_file = "~/.Amber.license", verify = TRUE, cert = NULL, timeout = 360) {
+        
+        self$license_file <- license_file
+        self$license_file <- Sys.getenv("AMBER_LICENSE_FILE", unset = self$license_file)
+
+        self$license_id <- license_id
+        self$license_id <- Sys.getenv("AMBER_LICENSE_ID", unset = self$license_id)
+
+        if (!is.null(license_file)) {
+          license_path <- path_real(self$license_file)
+          if (file.exists(license_path)){
+            file_data = NULL
+            tryCatch(
+              file_data <- rjson::fromJSON(file = license_path),
+              error = function(c) {
+                msg = paste(cat("JSON formatting error in license file: ", license_path))
+                rlang::abort(msg, class = "AmberUserError")
+              }
+            )
+
+            trycatch(
+              self$license_profile <- file_data[[self$license_id]],
+              error = function(c) {
+                msg = paste(cat("license_id ", license_id, " not found in license file"))
+                rlang::abort(msg, class = "AmberUserError")
+              }
+            )
+          } else {
+            self$license_path <- rjson::fromJSON('{"username": "", "password": "", "server": "", "oauth-server": ""}')
+          }
         } else {
-            self$apiClient <- ApiClient$new()
+          self$license_path <- rjson::fromJSON('{"username": "", "password": "", "server": "", "oauth-server": ""}')
         }
+
+        tryCatch(
+          {
+            self$license_profile[["username"]] <- Sys.getenv("AMBER_USERNAME", self$license_profile[["username"]])
+            self$license_profile[["password"]] <- Sys.getenv("AMBER_PASSWORD", self$license_profile[["password"]])
+            self$license_profile[["server"]] <- Sys.getenv("AMBER_SERVER", self$license_profile[["server"]])
+            # TODO: check if key is missing in license profile oauth-server
+            if (missing(self$license_profile[["oauth-server"]] || is.null(self$license_profile))) {
+              self$license_profile[["oauth-server"]] <- self$license_profile[["server"]]
+            }
+            self$license_profile[["oauth-server"]] <- Sys.getenv("AMBER_OAUTH_SERVER", self$license_profile[["oauth-server"]])
+
+            self$license_profile[["cert"]] <- Sys.getenv("AMBER_SSL_CERT", cert)
+            verify_str = toLower(Sys.getenv("AMBER_SSL_VERIFY", "true"))
+            self$license_profile[["verify"]] <- TRUE # Default
+            if (!verify || verify_str == "false") {
+              self$license_profile[["verify"]] <- FALSE
+            }
+          },
+
+          error = function(c) {
+            msg = paste("missing field")
+            rlang::abort(msg, class = "AmberUserError")
+          }
+        )
+
+        if (!self$license_profile[["verify"]]) {
+          # TODO: set verify to false in request thing
+          print("do something!")
+        }
+
+        if (self$license_profile[["username"]] == ""){
+          msg = paste("username not found in specified")
+          rlang::abort(msg, class = "AmberUserError")
+        }
+        if (self$license_profile[["password"]] == ""){
+          msg = paste("password not found in specified")
+          rlang::abort(msg, class = "AmberUserError")
+        }
+        if (self$license_profile[["server"]] == ""){
+          msg = paste("server not found in specified")
+          rlang::abort(msg, class = "AmberUserError")
+        }
+
     }, list_sensors = function(...) {
         args <- list(...)
         queryParams <- list()
@@ -526,4 +613,30 @@ DefaultApi <- R6::R6Class("DefaultApi", public = list(userAgent = "Boon Logic / 
             Response$new("API server error", resp)
         }
 
-    }))
+    }, callApi = function(url, method, queryParams, headerParams, body, ...){
+        headers <- httr::add_headers(headerParams)
+
+        if (method == "GET") {
+            httr::GET(url, queryParams, headers, ...)
+        }
+        else if (method == "POST") {
+            httr::POST(url, queryParams, headers, body = body, ...)
+        }
+        else if (method == "PUT") {
+            httr::PUT(url, queryParams, headers, body = body, ...)
+        }
+        else if (method == "PATCH") {
+            httr::PATCH(url, queryParams, headers, body = body, ...)
+        }
+        else if (method == "HEAD") {
+            httr::HEAD(url, queryParams, headers, ...)
+        }
+        else if (method == "DELETE") {
+            httr::DELETE(url, queryParams, headers, ...)
+        }
+        else {
+            stop("http method must be `GET`, `HEAD`, `OPTIONS`, `POST`, `PATCH`, `PUT` or `DELETE`.")
+        }
+    }
+  )
+)

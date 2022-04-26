@@ -16,6 +16,9 @@ generate-client: ## generate amber swagger client code based on json schema file
 docs: ## generate documentation
 	cd bin && RScript gen-docs.R
 
+compile:
+	R CMD check . --no-manual
+
 # test-v1, test-v1next, test-dev, test-qa, test-aoc, test-oap
 # add additional .license files in test directory to expand / customize tests
 # test-%: 
