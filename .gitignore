@@ -42,6 +42,7 @@ vignettes/*.pdf
 # swagger files
 .swagger-codegen*
 swagger.json
+.travis.yml
 
 
 *.DS_Store

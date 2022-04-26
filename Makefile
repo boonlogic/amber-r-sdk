@@ -9,7 +9,9 @@ format-check: ## check for format errors
 # 	go clean -modcache -cache
 
 generate-client: ## generate amber swagger client code based on json schema file
-	swagger-codegen generate -i swagger.json -l r
+	swagger-codegen generate -i swagger.json -l r && \
+	rm R/DefaultApi.r && \
+	git restore DESCRIPTION NAMESPACE .gitignore
 
 docs: ## generate documentation
 	cd bin && RScript gen-docs.R
