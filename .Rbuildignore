@@ -2,3 +2,6 @@
 ^\.Rproj\.user$
 .swagger*
 swagger.json
+bin
+Makefile
+^.*\.Rcheck$
