@@ -9,7 +9,6 @@
 #' PutStreamResponse Class
 #'
 #' @field vector 
-#' @field vectorCSV 
 #' @field results 
 #'
 #' @importFrom R6 R6Class
@@ -19,16 +18,11 @@ PutStreamResponse <- R6::R6Class(
   'PutStreamResponse',
   public = list(
     `vector` = NULL,
-    `vectorCSV` = NULL,
     `results` = NULL,
-    initialize = function(`vector`, `vectorCSV`, `results`){
+    initialize = function(`vector`, `results`){
       if (!missing(`vector`)) {
-        stopifnot(R6::is.R6(`vector`))
+        stopifnot(is.character(`vector`), length(`vector`) == 1)
         self$`vector` <- `vector`
-      }
-      if (!missing(`vectorCSV`)) {
-        stopifnot(is.character(`vectorCSV`), length(`vectorCSV`) == 1)
-        self$`vectorCSV` <- `vectorCSV`
       }
       if (!missing(`results`)) {
         stopifnot(R6::is.R6(`results`))
@@ -38,10 +32,7 @@ PutStreamResponse <- R6::R6Class(
     toJSON = function() {
       PutStreamResponseObject <- list()
       if (!is.null(self$`vector`)) {
-        PutStreamResponseObject[['vector']] <- self$`vector`$toJSON()
-      }
-      if (!is.null(self$`vectorCSV`)) {
-        PutStreamResponseObject[['vectorCSV']] <- self$`vectorCSV`
+        PutStreamResponseObject[['vector']] <- self$`vector`
       }
       if (!is.null(self$`results`)) {
         PutStreamResponseObject[['results']] <- self$`results`$toJSON()
@@ -52,12 +43,7 @@ PutStreamResponse <- R6::R6Class(
     fromJSON = function(PutStreamResponseJson) {
       PutStreamResponseObject <- jsonlite::fromJSON(PutStreamResponseJson)
       if (!is.null(PutStreamResponseObject$`vector`)) {
-        vectorObject <- MayContainNullsArray$new()
-        vectorObject$fromJSON(jsonlite::toJSON(PutStreamResponseObject$vector, auto_unbox = TRUE))
-        self$`vector` <- vectorObject
-      }
-      if (!is.null(PutStreamResponseObject$`vectorCSV`)) {
-        self$`vectorCSV` <- PutStreamResponseObject$`vectorCSV`
+        self$`vector` <- PutStreamResponseObject$`vector`
       }
       if (!is.null(PutStreamResponseObject$`results`)) {
         resultsObject <- PostStreamResponse$new()
@@ -69,19 +55,15 @@ PutStreamResponse <- R6::R6Class(
        sprintf(
         '{
            "vector": %s,
-           "vectorCSV": %s,
            "results": %s
         }',
-        self$`vector`$toJSON(),
-        self$`vectorCSV`,
+        self$`vector`,
         self$`results`$toJSON()
       )
     },
     fromJSONString = function(PutStreamResponseJson) {
       PutStreamResponseObject <- jsonlite::fromJSON(PutStreamResponseJson)
-      MayContainNullsArrayObject <- MayContainNullsArray$new()
-      self$`vector` <- MayContainNullsArrayObject$fromJSON(jsonlite::toJSON(PutStreamResponseObject$vector, auto_unbox = TRUE))
-      self$`vectorCSV` <- PutStreamResponseObject$`vectorCSV`
+      self$`vector` <- PutStreamResponseObject$`vector`
       PostStreamResponseObject <- PostStreamResponse$new()
       self$`results` <- PostStreamResponseObject$fromJSON(jsonlite::toJSON(PutStreamResponseObject$results, auto_unbox = TRUE))
     }

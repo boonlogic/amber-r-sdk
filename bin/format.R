@@ -1,1 +1,1 @@
-formatR::tidy_dir(recursive = TRUE)
+formatR::tidy_dir("R", recursive = TRUE)

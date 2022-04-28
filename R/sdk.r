@@ -3,9 +3,8 @@
 #' @title Default operations
 #' @description swagger.Default
 #'
-#' @field path Stores url path of the request.
-#' @field apiClient Handles the client-server communication.
-#' @field userAgent Set the user agent of the request.
+#' @field license_id Stores url path of the request.
+#' @field license_file Handles the client-server communication.
 #'
 #' @importFrom R6 R6Class
 #'
@@ -71,32 +70,30 @@
 AmberClient <- R6::R6Class(
   "AmberClient", 
   private = list(
-    userAgent = "Boon Logic / amber-r-sdk / requests",
+    `user_agent` = "Boon Logic / amber-r-sdk / requests",
     verify = TRUE,
     cert = NULL,
-    timeout = 360,
-    token = NULL,
-    reauth_time = 0,
-    license_profile =  NULL,
+    `timeout` = 360,
+    `token` = NULL,
+    `reauthTime` = 0,
+    `licenseProfile` =  NULL,
     authenticate = function(...) {
       tIn = Sys.time()
       if (reauth_time %<% tIn) {
-        args <- list(...)
-        queryParams <- list()
-        headerParams <- character()
+        body <- c(`username` = self$`licenseProfile`$username,
+                  `password` = self$`licenseProfile`$password)
+
+        headerParams = c(`Content-Type` = "application/json",
+                         `User-Agent` = self$`user_agent`)
 
         urlPath <- "/oauth2"
-        resp <- self$callApi(url = paste0(self$license_profile[["oauth-server"]], urlPath),
-                                   method = "POST",
-                                   queryParams = queryParams,
-                                   headerParams = headerParams,
-                                   body = body,
-                                   ...)
+        resp <- httr::POST(paste0(self$`licenseProfile`["oauth-server"], urlPath),
+                   headerParams, body = body, ...)
 
         if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
           returnObject <- PostAuth2Response$new()
           result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-          self$token <- result$`id_token`
+          self$`token` <- result$`id_token`
           if (is.null(expire_secs)) {
             msg = paste("authentication failed: invalid credentials")
             rlang::abort(msg, class = "AmberCloudError")
@@ -106,7 +103,7 @@ AmberClient <- R6::R6Class(
             msg = paste("authentication failed: missing expiration")
             rlang::abort(msg, class = "AmberCloudError")
           }
-          self$reauth_time <- tIn + expire_secs - 60
+          self$`reauthTime` <- tIn + expire_secs - 60
 
         } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
           Response$new("API client error", resp)
@@ -116,35 +113,49 @@ AmberClient <- R6::R6Class(
 
       }
       c(TRUE, NULL)
+
     }, callApi = function(url, method, queryParams, headerParams, body, ...){
+        if (Sys.time() %>% self$`reauthTime`) {
+          self$authenticate()
+        }
+
+        headerParams <- append(headerParams, c(`Authorization` = paste0("Bearer ", self$`token`),
+                                               `User-Agent` = self$`user_agent`,
+                                               `Content-Type` = "application/json"))
         headers <- httr::add_headers(headerParams)
 
         if (method == "GET") {
-            httr::GET(url, queryParams, headers, ...)
+            resp <- httr::GET(url, queryParams, headers, ...)
         }
         else if (method == "POST") {
-            httr::POST(url, queryParams, headers, body = body, ...)
+            resp <- httr::POST(url, queryParams, headers, body = body, ...)
         }
         else if (method == "PUT") {
-            httr::PUT(url, queryParams, headers, body = body, ...)
-        }
-        else if (method == "PATCH") {
-            httr::PATCH(url, queryParams, headers, body = body, ...)
-        }
-        else if (method == "HEAD") {
-            httr::HEAD(url, queryParams, headers, ...)
+            resp <- httr::PUT(url, queryParams, headers, body = body, ...)
         }
         else if (method == "DELETE") {
-            httr::DELETE(url, queryParams, headers, ...)
+            resp <- httr::DELETE(url, queryParams, headers, ...)
         }
         else {
-            stop("http method must be `GET`, `HEAD`, `OPTIONS`, `POST`, `PATCH`, `PUT` or `DELETE`.")
+            stop("http method must be `GET`, `POST`, `PUT` or `DELETE`.")
         }
+
+        if (httr::status_code(resp) < 200 || httr::status_code(resp) >= 300) {
+          msg = jsonLite::fromJSON(resp)
+          rlang::abort(msg, class = "AmberCloudError")
+        }
+
+        resp
     }
   ),
   public = list(
     license_id = NULL,
     license_file = NULL,
+    #' @param license_id key value for which amber server to use
+    #' @param license_file path to the Amber license file containing user credentials and server address
+    #' @param verify whether or not to verify the connection
+    #' @param cert whether or not to require certification in connect
+    #' @param timeout number of seconds to wait before failing connection
     initialize = function(license_id = "default", license_file = "~/.Amber.license", verify = TRUE, cert = NULL, timeout = 360) {
         
         self$license_file <- license_file
@@ -166,7 +177,7 @@ AmberClient <- R6::R6Class(
             )
 
             trycatch(
-              self$license_profile <- file_data[[self$license_id]],
+              self$`licenseProfile` <- file_data[[self$license_id]],
               error = function(c) {
                 msg = paste(cat("license_id ", license_id, " not found in license file"))
                 rlang::abort(msg, class = "AmberUserError")
@@ -181,20 +192,20 @@ AmberClient <- R6::R6Class(
 
         tryCatch(
           {
-            self$license_profile[["username"]] <- Sys.getenv("AMBER_USERNAME", self$license_profile[["username"]])
-            self$license_profile[["password"]] <- Sys.getenv("AMBER_PASSWORD", self$license_profile[["password"]])
-            self$license_profile[["server"]] <- Sys.getenv("AMBER_SERVER", self$license_profile[["server"]])
+            self$`licenseProfile`$username <- Sys.getenv("AMBER_USERNAME", self$`licenseProfile`$username)
+            self$`licenseProfile`$password <- Sys.getenv("AMBER_PASSWORD", self$`licenseProfile`$password)
+            self$`licenseProfile`$server <- Sys.getenv("AMBER_SERVER", self$`licenseProfile`$server)
             # TODO: check if key is missing in license profile oauth-server
-            if (missing(self$license_profile[["oauth-server"]] || is.null(self$license_profile))) {
-              self$license_profile[["oauth-server"]] <- self$license_profile[["server"]]
+            if (missing(self$`licenseProfile`$oauth-server || is.null(self$`licenseProfile`))) {
+              self$`licenseProfile`$oauth-server <- self$`licenseProfile`$server
             }
-            self$license_profile[["oauth-server"]] <- Sys.getenv("AMBER_OAUTH_SERVER", self$license_profile[["oauth-server"]])
+            self$`licenseProfile`$oauth-server <- Sys.getenv("AMBER_OAUTH_SERVER", self$`licenseProfile`$oauth-server)
 
-            self$license_profile[["cert"]] <- Sys.getenv("AMBER_SSL_CERT", cert)
+            self$`licenseProfile`$cert <- Sys.getenv("AMBER_SSL_CERT", cert)
             verify_str = toLower(Sys.getenv("AMBER_SSL_VERIFY", "true"))
-            self$license_profile[["verify"]] <- TRUE # Default
+            self$`licenseProfile`$verify <- TRUE # Default
             if (!verify || verify_str == "false") {
-              self$license_profile[["verify"]] <- FALSE
+              self$`licenseProfile`$verify <- FALSE
             }
           },
 
@@ -204,405 +215,477 @@ AmberClient <- R6::R6Class(
           }
         )
 
-        if (!self$license_profile[["verify"]]) {
+        if (!self$`licenseProfile`$verify) {
           # TODO: set verify to false in request thing
           print("do something!")
         }
 
-        if (self$license_profile[["username"]] == ""){
+        if (self$`licenseProfile`$username == ""){
           msg = paste("username not found in specified")
           rlang::abort(msg, class = "AmberUserError")
         }
-        if (self$license_profile[["password"]] == ""){
+        if (self$`licenseProfile`$password == ""){
           msg = paste("password not found in specified")
           rlang::abort(msg, class = "AmberUserError")
         }
-        if (self$license_profile[["server"]] == ""){
+        if (self$`licenseProfile`$server == ""){
           msg = paste("server not found in specified")
           rlang::abort(msg, class = "AmberUserError")
         }
 
-    }, list_sensors = function(...) {
-        args <- list(...)
+    }, 
+    #' @description List all sensors on current Amber server
+    #'
+    #' @return list of sensorIDs and labels
+    list_sensors = function() {
         queryParams <- list()
         headerParams <- character()
+        body <- NULL
 
         urlPath <- "/sensors"
-        resp <- self$callApi(url = paste0(self$license_profile[["server"]], urlPath),
-            method = "GET", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
+        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
+            method = "GET", queryParams = queryParams, headerParams = headers, body = body, ...)
 
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- GetSensorsResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
+        returnObject <- GetSensorsResponse$new()
+        result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        sensors = list()
+        for (sensor in result) {
+          sensors <- append(sensors, c(sensor$`sensorId` <- sensor$`label`))
         }
+        sensors
 
-    }, get_sensor = function(sensor_id, ...) {
-        args <- list(...)
+    }, 
+    #' @description Get the label, ID, and usage info for the given sensor
+    #'
+    #' @param sensor_id Boon generate identifier for the sensor
+    #'
+    #' @return object with sensor ID, label, and usage
+    get_sensor = function(sensor_id) {
         queryParams <- list()
         headerParams <- character()
+        body <- NULL
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
         }
 
         urlPath <- "/sensor"
-        resp <- self$callApi(url = paste0(self$license_profile[["server"]], urlPath),
+        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- GetSensorResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
+          returnObject <- GetSensorResponse$new()
+          returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
 
-    }, create_sensor = function(body, ...) {
-        args <- list(...)
+    }, 
+    #' @description Initialize a new sensor
+    #'
+    #' @param label string identifier for the sensor
+    #'
+    #' @return sensor ID
+    create_sensor = function(label = "") {
         queryParams <- list()
         headerParams <- character()
-
-        if (!missing(body)) {
-            body <- body$toJSONString()
-        } else {
-            body <- NULL
-        }
+        body <- c(`label` = label)
 
         urlPath <- "/sensor"
-        resp <- self$callApi(url = paste0(self$license_profile[["server"]], urlPath),
+        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
             method = "POST", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- PostSensorResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
+        returnObject <- PostSensorResponse$new()
+        result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        result$`sensorId`
 
-    }, update_label = function(body, sensor_id, ...) {
-        args <- list(...)
+    }, 
+    #' @description Change the string identifier for the sensor
+    #'
+    #' @param sensor_id Boon generate identifier for the sensor
+    #'
+    #' @return label
+    update_label = function(sensor_id) {
         queryParams <- list()
         headerParams <- character()
+        body <- NULL
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
-        }
-
-        if (!missing(body)) {
-            body <- body$toJSONString()
-        } else {
-            body <- NULL
         }
 
         urlPath <- "/sensor"
-        resp <- self$callApi(url = paste0(self$license_profile[["server"]], urlPath),
+        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
             method = "PUT", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- PutSensorResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
+        returnObject <- PutSensorResponse$new()
+        result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        result$`label`
 
-    }, configure_sensor = function(body, sensor_id, ...) {
-        args <- list(...)
+    },
+    #' @description Set the configuration for the sensor
+    #'
+    #' @param sensor_id Boon generate identifier for the sensor
+    #' @param feature_count number of features in the vectors to be clustered
+    #' @param streaming_window_size shifting window of concatenated vectors 
+    #' @param samples_to_buffer number of samples to use for the autotuning buffer
+    #' @param anomaly_history_window length of data to consider in "recent anomaly" analysis (AH)
+    #' @param learning_rate_numerator number of new clusters in growth graduation requirement
+    #' @param learning_rate_denominator recent indexes for cluster growth graduation requirement
+    #' @param learning_max_clusters max number of clusters created
+    #' @param learning_max_samples max number of samples to cluster in training
+    #' @param features specified min/max values for features (won't autotune on set features)
+    #'
+    #' @return configuration object with all the values that were set
+    configure_sensor = function(sensor_id, feature_count = 1,
+                                   streaming_window_size = 25,
+                                   samples_to_buffer = 10000,
+                                   anomaly_history_window = 10000,
+                                   learning_rate_numerator = 10,
+                                   learning_rate_denominator = 10000,
+                                   learning_max_clusters = 1000,
+                                   learning_max_samples = 1000000,
+                                   features = NULL) {
         queryParams <- list()
         headerParams <- character()
+        body <- character()
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
         }
-
-        if (!missing(body)) {
-            body <- body$toJSONString()
-        } else {
-            body <- NULL
+        if (is.null(features)) {
+          features <- list()
+        }
+        if (feature_count%%1 != 0 || feature_count <= 0){
+          msg = "invalid 'feature_count': must be a positive integer"
+          rlang::abort(msg, class = "AmberUserError")
+        }
+        if (streaming_window_size%%1 != 0 || streaming_window_size <= 0){
+          msg = "invalid 'streaming_window_size': must be a positive integer"
+          rlang::abort(msg, class = "AmberUserError")
         }
 
+        body["featureCount"] <- feature_count
+        body["streamingWindowSize"] <- streaming_window_size
+        body["samplesToBuffer"] <- samples_to_buffer
+        body["anomalyHistoryWindow"] <- anomaly_history_window
+        body["learningRateNumerator"] <- learning_rate_numerator
+        body["learningRateDenominator"] <- learning_rate_denominator
+        body["learningMaxClusters"] <- learning_max_clusters
+        body["learningMaxSamples"] <- learning_max_samples
+        body["features"] <- features
+
         urlPath <- "/config"
-        resp <- self$callApi(url = paste0(self$license_profile[["server"]], urlPath),
+        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
             method = "POST", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- PostConfigResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
+        returnObject <- PostConfigResponse$new()
+        returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
 
-    }, configure_fusion = function(body, sensor_id, ...) {
-        args <- list(...)
+    },
+    #' @description Configure fusion vectors' rules
+    #'
+    #' @param sensor_id Boon generate identifier for the sensor
+    #' @param feature_count number of features in the vector
+    #' @param features list of objects specifying the submit rule for each feature
+    #'
+    #' @return fusion config object with the values that were set
+    configure_fusion = function(sensor_id, feature_count = 5, features = NULL) {
         queryParams <- list()
         headerParams <- character()
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
         }
-
-        if (!missing(body)) {
-            body <- body$toJSONString()
-        } else {
-            body <- NULL
+        if (is.null(features)) {
+          if (feature_count%%1 != 0 || feature_count <= 0){
+            msg = "invalid 'feature_count': must be a positive integer"
+            rlang::abort(msg, class = "AmberUserError")
+          }
+          features <- character()
+          for (i in 1:feature_count) {
+            features <- append(features, c(labels = "", submitRule = ""))
+          }
         }
 
+        body <- c(features = features)
         urlPath <- "/config"
-        resp <- self$callApi(url = paste0(self$license_profile[["server"]], urlPath),
-            method = "PUT", queryParams = queryParams, headerParams = headerParams,
+        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
+            method = "PUT", queryParams = queryParams, headerParams = headersams,
             body = body, ...)
 
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- PutConfigResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
+        returnObject <- PutConfigResponse$new()
+        returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
 
-    }, enable_learning = function(body, sensor_id, ...) {
-        args <- list(...)
+    },
+    #' @description Set new streaming parameters and turn on learning
+    #'
+    #' @param sensor_id Boon generate identifier for the sensor
+    #' @param anomaly_history_window length of data to consider in "recent anomaly" analysis (AH)
+    #' @param learning_rate_numerator number of new clusters in growth graduation requirement
+    #' @param learning_rate_denominator recent indexes for cluster growth graduation requirement
+    #' @param learning_max_clusters max number of clusters created
+    #' @param learning_max_samples max number of samples to cluster in training
+    #'
+    #' @return streaming parameters object with the values that were set
+    enable_learning = function(sensor_id, anomaly_history_window = NULL,
+                                  learning_rate_numerator = NULL,
+                                  learning_rate_denominator = NULL,
+                                  learning_max_clusters = NULL,
+                                  learning_max_samples = NULL) {
         queryParams <- list()
         headerParams <- character()
+        body <- c(streaming = character())
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
         }
-
-        if (!missing(body)) {
-            body <- body$toJSONString()
-        } else {
-            body <- NULL
+        if (!is.null(anomaly_history_window)) {
+          body$streaming <- append(body$streaming, c(anomalyHistoryWindow = anomaly_history_window))
+        }
+        if (!is.null(learning_rate_numerator)) {
+          body$streaming <- append(body$streaming, c(learningRateNumerator = learning_rate_numerator))
+        }
+        if (!is.null(learning_rate_denominator)) {
+          body$streaming <- append(body$streaming, c(learningRateDenominator = learning_rate_denominator))
+        }
+        if (!is.null(learning_max_clusters)) {
+          body$streaming <- append(body$streaming, c(learningMaxClusters = learning_max_clusters))
+        }
+        if (!is.null(learning_max_samples)) {
+          body$streaming <- append(body$streaming, c(learningMaxSamples = learning_max_samples))
         }
 
         urlPath <- "/config"
-        resp <- self$callApi(url = paste0(self$license_profile[["server"]], urlPath),
-            method = "PUT", queryParams = queryParams, headerParams = headerParams,
+        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
+            method = "PUT", queryParams = queryParams, headerParams = headersams,
             body = body, ...)
 
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- PutConfigResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
+        returnObject <- PutConfigResponse$new()
+        returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
 
-    }, get_config = function(sensor_id, ...) {
-        args <- list(...)
+    },
+    #' @description Get the configuration for the given sensor
+    #'
+    #' @param sensor_id Boon generate identifier for the sensor
+    #'
+    #' @return configuration object with all the values that were set
+    get_config = function(sensor_id) {
         queryParams <- list()
         headerParams <- character()
+        body <- NULL
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
         }
 
         urlPath <- "/config"
-        resp <- self$callApi(url = paste0(self$license_profile[["server"]], urlPath),
+        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- GetConfigResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
+        returnObject <- GetConfigResponse$new()
+        returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
 
-    }, delete_sensor = function(sensor_id, ...) {
-        args <- list(...)
+    },
+    #' @description Delete the given sensor ID
+    #'
+    #' @param sensor_id Boon generate identifier for the sensor
+    #'
+    delete_sensor = function(sensor_id) {
         queryParams <- list()
         headerParams <- character()
+        body <- NULL
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
         }
 
         urlPath <- "/sensor"
-        resp <- self$callApi(url = paste0(self$license_profile[["server"]], urlPath),
+        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
             method = "DELETE", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- Error$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
+        returnObject <- Error$new()
+        result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
 
-    }, stream_sensor = function(body, sensor_id, ...) {
-        args <- list(...)
+    }, 
+    #' @description Send data to Amber for processing
+    #'
+    #' @param sensor_id Boon generate identifier for the sensor
+    #' @param data list of values to cluster
+    #' @param save_image if TRUE then save the amber image between calls
+    #'
+    #' @return status object with state, progress, overview, etc
+    stream_sensor = function(sensor_id, data, save_image = TRUE) {
         queryParams <- list()
         headerParams <- character()
+        body <- character()
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
         }
+        # TODO: convert data to csv
+        data_csv <- data
 
-        if (!missing(body)) {
-            body <- body$toJSONString()
-        } else {
-            body <- NULL
-        }
+        body["saveImage"] <- save_image
+        body["data"] <- data_csv
 
         urlPath <- "/stream"
-        resp <- self$callApi(url = paste0(self$license_profile[["server"]], urlPath),
+        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
             method = "POST", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- PostStreamResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
+        returnObject <- PostStreamResponse$new()
+        returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
 
-    }, stream_fusion = function(body, sensor_id, ...) {
-        args <- list(...)
+    }, 
+    #' @description Send data to Amber for processing using sensor fusion
+    #'
+    #' @param sensor_id Boon generate identifier for the sensor
+    #' @param vector data vector to cluster
+    #' @param submit options are: submit, nosubmit, default
+    #'
+    #' @return vector and submitRule object that was used
+    stream_fusion = function(sensor_id, vector, submit = NULL) {
         queryParams <- list()
         headerParams <- character()
+        body <- character()
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
         }
-
-        if (!missing(body)) {
-            body <- body$toJSONString()
-        } else {
-            body <- NULL
+        sopts <- list("submit", "nosubmit", "default")
+        if (is.null(submit)) {
+          submit <- "default"
+        }
+        if (!(submit %in% sopts)){
+          msg = paste0("'submit' must be one of ", sopts, ", got ", submit)
+          rlang::abort(msg, class = "AmberUserError")
         }
 
+        body["vector"] <- vector
+        body["submitRule"] <- submit
+
         urlPath <- "/stream"
-        resp <- self$callApi(url = paste0(self$license_profile[["server"]], urlPath),
+        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
             method = "PUT", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- PutStreamResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
+        returnObject <- PutStreamResponse$new()
+        returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
 
-    }, get_status = function(sensor_id, ...) {
-        args <- list(...)
+    },
+    #' @description Gets the status of the sensor
+    #'
+    #' @param sensor_id Boon generate identifier for the sensor
+    #'
+    #' @return overview object with analytics about the model
+    get_status = function(sensor_id) {
         queryParams <- list()
         headerParams <- character()
+        body <- NULL
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
         }
 
         urlPath <- "/status"
-        resp <- self$callApi(url = paste0(self$license_profile[["server"]], urlPath),
-            method = "GET", queryParams = queryParams, headerParams = headerParams,
+        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
+            method = "GET", queryParams = queryParams, headerParams = headersams,
             body = body, ...)
 
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- GetStatusResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
+        returnObject <- GetStatusResponse$new()
+        returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
 
-    }, pretrain_sensor = function(body, sensor_id, ...) {
-        args <- list(...)
+    },
+    #' @description Gets pretrain status
+    #'
+    #' @param sensor_id Boon generate identifier for the sensor
+    #'
+    #' @return string specifying what state pretraining is in
+    get_pretrain_state = function(sensor_id) {
         queryParams <- list()
         headerParams <- character()
+        body <- NULL
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
         }
 
-        if (!missing(body)) {
-            body <- body$toJSONString()
+        urlPath <- "/pretrain"
+        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
+            method = "GET", queryParams = queryParams, headerParams = headerParams,
+            body = body, ...)
+
+        returnObject <- GetPretrainResponse$new()
+        returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+
+    },
+    #' @description Use historical data to train the sensor
+    #'
+    #' @param sensor_id Boon generate identifier for the sensor
+    #' @param data list of values to train the sensor
+    #' @param autotune_config if TRUE, then pretraining will end in monitoring, otherwise it will use the give config to train
+    #' @param block if TRUE, wait for pretraining to finish (always TRUE for on prem)
+    #'
+    #' @return string specifying what state pretraining is in
+    pretrain_sensor = function(sensor_id, data, autotune_config = TRUE, block = TRUE) {
+        queryParams <- list()
+        headerParams <- character()
+        body <- character()
+
+        if (!missing(sensor_id)) {
+            headerParams["sensorId"] <- sensor_id
+        }
+
+        # TODO: convert to csv
+        data_csv <- data
+        body["data"] <- data_csv
+        body["autotuneConfig"] <- autotune_config
+
+        urlPath <- "/pretrain"
+        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
+            method = "POST", queryParams = queryParams, headerParams = headersams,
+            body = body, ...)
+
+        returnObject <- PostPretrainResponse$new()
+        result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        if (!block) {
+          result
         } else {
-            body <- NULL
+          continue <- TRUE
+          while (continue) {
+            result <- self$get_pretrain_state(sensor_id)
+            if (result["state"] == "Pretraining") {
+              Sys.sleep(5)
+            } else {
+              continue <- FALSE
+              result
+            }
+          }
         }
 
-        urlPath <- "/pretrain"
-        resp <- self$callApi(url = paste0(self$license_profile[["server"]], urlPath),
-            method = "POST", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
-
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- PostPretrainResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
-
-    }, get_pretrain_state = function(sensor_id, ...) {
-        args <- list(...)
-        queryParams <- list()
+    }, 
+    #' @description Get the root cause analysis for the cluster ids or the input pattern vectors
+    #'
+    #' @param sensor_id Boon generate identifier for the sensor
+    #' @param cluster_id list of cluster IDs to pull the root cause for
+    #' @param pattern list of vectors to generate the root cause for
+    #'
+    #' @return vector of analytics for the given cluster ID or pattern vector
+    get_root_cause = function(sensor_id, cluster_id, pattern) {
+        queryParams <- character()
         headerParams <- character()
 
-        if (!missing(sensor_id)) {
-            headerParams["sensorId"] <- sensor_id
+        if (!missing(cluster_id) && !missing(cluster_id)) {
+          msg = "cannot specify both patterns and cluster IDs for analysis"
+          rlang::abort(msg, class = "AmberUserError")
         }
-
-        urlPath <- "/pretrain"
-        resp <- self$callApi(url = paste0(self$license_profile[["server"]], urlPath),
-            method = "GET", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
-
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- GetPretrainResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
+        if (missing(cluster_id) && missing(cluster_id)) {
+          msg = "Must specify either patterns or cluster IDs for analysis"
+          rlang::abort(msg, class = "AmberUserError")
         }
-
-    }, get_root_cause = function(sensor_id, cluster_id, pattern, ...) {
-        args <- list(...)
-        queryParams <- list()
-        headerParams <- character()
-
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
         }
@@ -616,39 +699,29 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/rootCause"
-        resp <- self$callApi(url = paste0(self$license_profile[["server"]], urlPath),
+        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- GetRootCauseResponse$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
+        returnObject <- GetRootCauseResponse$new()
+        returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
 
-    }, get_version = function(...) {
-        args <- list(...)
+    }, 
+    #' @description Get the current version numbers for the Amber server
+    #'
+    #' @return object containing the various version numbers for the parts of Amber
+    get_version = function() {
         queryParams <- list()
         headerParams <- character()
+        body <- NULL
 
         urlPath <- "/version"
-        resp <- self$callApi(url = paste0(self$license_profile[["server"]], urlPath),
+        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body, ...)
 
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-            returnObject <- Version$new()
-            result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-            Response$new(returnObject, resp)
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-            Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-            Response$new("API server error", resp)
-        }
+        returnObject <- Version$new()
+        returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
 
     }
   )

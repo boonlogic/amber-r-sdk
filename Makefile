@@ -12,7 +12,7 @@ generate-client: ## generate amber swagger client code based on json schema file
 	swagger-codegen generate -i swagger.json -l r
 
 docs: ## generate documentation
-	cd bin && RScript gen-docs.R
+	RScript bin/gen-docs.R
 
 compile:
 	R CMD build .

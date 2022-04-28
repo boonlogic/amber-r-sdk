@@ -69,22 +69,9 @@ stream_fusion Stream data to a sensor fusion vector
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{path}}{Stores url path of the request.}
+\item{\code{license_id}}{Stores url path of the request.}
 
-\item{\code{apiClient}}{Handles the client-server communication.}
-
-\item{\code{userAgent}}{Set the user agent of the request.}
-}
-\if{html}{\out{</div>}}
-}
-\section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{path}}{Stores url path of the request.}
-
-\item{\code{apiClient}}{Handles the client-server communication.}
-
-\item{\code{userAgent}}{Set the user agent of the request.}
+\item{\code{license_file}}{Handles the client-server communication.}
 }
 \if{html}{\out{</div>}}
 }
@@ -104,8 +91,8 @@ stream_fusion Stream data to a sensor fusion vector
 \item \href{#method-stream_sensor}{\code{AmberClient$stream_sensor()}}
 \item \href{#method-stream_fusion}{\code{AmberClient$stream_fusion()}}
 \item \href{#method-get_status}{\code{AmberClient$get_status()}}
-\item \href{#method-pretrain_sensor}{\code{AmberClient$pretrain_sensor()}}
 \item \href{#method-get_pretrain_state}{\code{AmberClient$get_pretrain_state()}}
+\item \href{#method-pretrain_sensor}{\code{AmberClient$pretrain_sensor()}}
 \item \href{#method-get_root_cause}{\code{AmberClient$get_root_cause()}}
 \item \href{#method-get_version}{\code{AmberClient$get_version()}}
 \item \href{#method-clone}{\code{AmberClient$clone()}}
@@ -125,150 +112,397 @@ stream_fusion Stream data to a sensor fusion vector
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{license_id}}{key value for which amber server to use}
+
+\item{\code{license_file}}{path to the Amber license file containing user credentials and server address}
+
+\item{\code{verify}}{whether or not to verify the connection}
+
+\item{\code{cert}}{whether or not to require certification in connect}
+
+\item{\code{timeout}}{number of seconds to wait before failing connection}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-list_sensors"></a>}}
 \if{latex}{\out{\hypertarget{method-list_sensors}{}}}
 \subsection{Method \code{list_sensors()}}{
+List all sensors on current Amber server
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$list_sensors(...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$list_sensors()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+list of sensorIDs and labels
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get_sensor"></a>}}
 \if{latex}{\out{\hypertarget{method-get_sensor}{}}}
 \subsection{Method \code{get_sensor()}}{
+Get the label, ID, and usage info for the given sensor
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$get_sensor(sensor_id, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$get_sensor(sensor_id)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sensor_id}}{Boon generate identifier for the sensor}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+object with sensor ID, label, and usage
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-create_sensor"></a>}}
 \if{latex}{\out{\hypertarget{method-create_sensor}{}}}
 \subsection{Method \code{create_sensor()}}{
+Initialize a new sensor
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$create_sensor(body, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$create_sensor(label = "")}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{label}}{string identifier for the sensor}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+sensor ID
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-update_label"></a>}}
 \if{latex}{\out{\hypertarget{method-update_label}{}}}
 \subsection{Method \code{update_label()}}{
+Change the string identifier for the sensor
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$update_label(body, sensor_id, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$update_label(sensor_id)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sensor_id}}{Boon generate identifier for the sensor}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+label
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-configure_sensor"></a>}}
 \if{latex}{\out{\hypertarget{method-configure_sensor}{}}}
 \subsection{Method \code{configure_sensor()}}{
+Set the configuration for the sensor
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$configure_sensor(body, sensor_id, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$configure_sensor(
+  sensor_id,
+  feature_count = 1,
+  streaming_window_size = 25,
+  samples_to_buffer = 10000,
+  anomaly_history_window = 10000,
+  learning_rate_numerator = 10,
+  learning_rate_denominator = 10000,
+  learning_max_clusters = 1000,
+  learning_max_samples = 1e+06,
+  features = NULL
+)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sensor_id}}{Boon generate identifier for the sensor}
+
+\item{\code{feature_count}}{number of features in the vectors to be clustered}
+
+\item{\code{streaming_window_size}}{shifting window of concatenated vectors}
+
+\item{\code{samples_to_buffer}}{number of samples to use for the autotuning buffer}
+
+\item{\code{anomaly_history_window}}{length of data to consider in "recent anomaly" analysis (AH)}
+
+\item{\code{learning_rate_numerator}}{number of new clusters in growth graduation requirement}
+
+\item{\code{learning_rate_denominator}}{recent indexes for cluster growth graduation requirement}
+
+\item{\code{learning_max_clusters}}{max number of clusters created}
+
+\item{\code{learning_max_samples}}{max number of samples to cluster in training}
+
+\item{\code{features}}{specified min/max values for features (won't autotune on set features)}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+configuration object with all the values that were set
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-configure_fusion"></a>}}
 \if{latex}{\out{\hypertarget{method-configure_fusion}{}}}
 \subsection{Method \code{configure_fusion()}}{
+Configure fusion vectors' rules
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$configure_fusion(body, sensor_id, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$configure_fusion(sensor_id, feature_count = 5, features = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sensor_id}}{Boon generate identifier for the sensor}
+
+\item{\code{feature_count}}{number of features in the vector}
+
+\item{\code{features}}{list of objects specifying the submit rule for each feature}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+fusion config object with the values that were set
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-enable_learning"></a>}}
 \if{latex}{\out{\hypertarget{method-enable_learning}{}}}
 \subsection{Method \code{enable_learning()}}{
+Set new streaming parameters and turn on learning
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$enable_learning(body, sensor_id, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$enable_learning(
+  sensor_id,
+  anomaly_history_window = NULL,
+  learning_rate_numerator = NULL,
+  learning_rate_denominator = NULL,
+  learning_max_clusters = NULL,
+  learning_max_samples = NULL
+)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sensor_id}}{Boon generate identifier for the sensor}
+
+\item{\code{anomaly_history_window}}{length of data to consider in "recent anomaly" analysis (AH)}
+
+\item{\code{learning_rate_numerator}}{number of new clusters in growth graduation requirement}
+
+\item{\code{learning_rate_denominator}}{recent indexes for cluster growth graduation requirement}
+
+\item{\code{learning_max_clusters}}{max number of clusters created}
+
+\item{\code{learning_max_samples}}{max number of samples to cluster in training}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+streaming parameters object with the values that were set
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get_config"></a>}}
 \if{latex}{\out{\hypertarget{method-get_config}{}}}
 \subsection{Method \code{get_config()}}{
+Get the configuration for the given sensor
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$get_config(sensor_id, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$get_config(sensor_id)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sensor_id}}{Boon generate identifier for the sensor}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+configuration object with all the values that were set
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-delete_sensor"></a>}}
 \if{latex}{\out{\hypertarget{method-delete_sensor}{}}}
 \subsection{Method \code{delete_sensor()}}{
+Delete the given sensor ID
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$delete_sensor(sensor_id, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$delete_sensor(sensor_id)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sensor_id}}{Boon generate identifier for the sensor}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-stream_sensor"></a>}}
 \if{latex}{\out{\hypertarget{method-stream_sensor}{}}}
 \subsection{Method \code{stream_sensor()}}{
+Send data to Amber for processing
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$stream_sensor(body, sensor_id, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$stream_sensor(sensor_id, data, save_image = TRUE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sensor_id}}{Boon generate identifier for the sensor}
+
+\item{\code{data}}{list of values to cluster}
+
+\item{\code{save_image}}{if TRUE then save the amber image between calls}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+status object with state, progress, overview, etc
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-stream_fusion"></a>}}
 \if{latex}{\out{\hypertarget{method-stream_fusion}{}}}
 \subsection{Method \code{stream_fusion()}}{
+Send data to Amber for processing using sensor fusion
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$stream_fusion(body, sensor_id, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$stream_fusion(sensor_id, vector, submit = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sensor_id}}{Boon generate identifier for the sensor}
+
+\item{\code{vector}}{data vector to cluster}
+
+\item{\code{submit}}{options are: submit, nosubmit, default}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+vector and submitRule object that was used
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get_status"></a>}}
 \if{latex}{\out{\hypertarget{method-get_status}{}}}
 \subsection{Method \code{get_status()}}{
+Gets the status of the sensor
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$get_status(sensor_id, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$get_status(sensor_id)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sensor_id}}{Boon generate identifier for the sensor}
 }
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-pretrain_sensor"></a>}}
-\if{latex}{\out{\hypertarget{method-pretrain_sensor}{}}}
-\subsection{Method \code{pretrain_sensor()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$pretrain_sensor(body, sensor_id, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{</div>}}
 }
-
+\subsection{Returns}{
+overview object with analytics about the model
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get_pretrain_state"></a>}}
 \if{latex}{\out{\hypertarget{method-get_pretrain_state}{}}}
 \subsection{Method \code{get_pretrain_state()}}{
+Gets pretrain status
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$get_pretrain_state(sensor_id, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$get_pretrain_state(sensor_id)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sensor_id}}{Boon generate identifier for the sensor}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+string specifying what state pretraining is in
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-pretrain_sensor"></a>}}
+\if{latex}{\out{\hypertarget{method-pretrain_sensor}{}}}
+\subsection{Method \code{pretrain_sensor()}}{
+Use historical data to train the sensor
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$pretrain_sensor(
+  sensor_id,
+  data,
+  autotune_config = TRUE,
+  block = TRUE
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sensor_id}}{Boon generate identifier for the sensor}
+
+\item{\code{data}}{list of values to train the sensor}
+
+\item{\code{autotune_config}}{if TRUE, then pretraining will end in monitoring, otherwise it will use the give config to train}
+
+\item{\code{block}}{if TRUE, wait for pretraining to finish (always TRUE for on prem)}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+string specifying what state pretraining is in
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get_root_cause"></a>}}
 \if{latex}{\out{\hypertarget{method-get_root_cause}{}}}
 \subsection{Method \code{get_root_cause()}}{
+Get the root cause analysis for the cluster ids or the input pattern vectors
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$get_root_cause(sensor_id, cluster_id, pattern, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$get_root_cause(sensor_id, cluster_id, pattern)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sensor_id}}{Boon generate identifier for the sensor}
+
+\item{\code{cluster_id}}{list of cluster IDs to pull the root cause for}
+
+\item{\code{pattern}}{list of vectors to generate the root cause for}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+vector of analytics for the given cluster ID or pattern vector
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get_version"></a>}}
 \if{latex}{\out{\hypertarget{method-get_version}{}}}
 \subsection{Method \code{get_version()}}{
+Get the current version numbers for the Amber server
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$get_version(...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$get_version()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+object containing the various version numbers for the parts of Amber
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

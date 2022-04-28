@@ -13,8 +13,6 @@ PutStreamResponse Class
 \describe{
 \item{\code{vector}}{}
 
-\item{\code{vectorCSV}}{}
-
 \item{\code{results}}{}
 }
 \if{html}{\out{</div>}}
@@ -35,7 +33,7 @@ PutStreamResponse Class
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PutStreamResponse$new(vector, vectorCSV, results)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PutStreamResponse$new(vector, results)}\if{html}{\out{</div>}}
 }
 
 }
