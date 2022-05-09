@@ -1,0 +1,30 @@
+{
+    "default": {
+        "username": "admin",
+        "password": "admin",
+        "server": "http://localhost:5007/v1",
+        "oauth-server": "http://localhost:5007/v1"
+    },
+    "prod": {
+        "username": "elise-prod",
+        "password": "ea98mM*SE2C2",
+        "server": "https://amber.boonlogic.com/v1"
+    },
+    "missing-username": {
+        "password": "filler-password",
+        "server": "https://amber-local.boonlogic.com/dev"
+    },
+    "missing-password": {
+        "username": "amber-test-user",
+        "server": "https://amber-local.boonlogic.com/dev"
+    },
+    "missing-server": {
+        "username": "amber-test-user",
+        "password": "filler-password"
+    },
+    "garbage": {
+        "username": "garbage-username",
+        "password": "garbage-password",
+        "server": "https://amber-local.boonlogic.com/dev"
+    }
+}
