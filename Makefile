@@ -29,4 +29,5 @@ test-%:
 	AMBER_TEST_LICENSE_ID=$* RScript bin/test.R
 
 init:
-	RScript requirements.R
+	RScript bin/init.R && \
+	RScript bin/requirements.R
