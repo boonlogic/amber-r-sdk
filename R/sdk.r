@@ -68,96 +68,19 @@
 #'
 #' @export
 AmberClient <- R6::R6Class(
-  "AmberClient", 
-  private = list(
-    `user_agent` = "Boon Logic / amber-r-sdk / requests",
-    verify = TRUE,
-    cert = NULL,
-    `timeout` = 360,
-    `token` = NULL,
-    `reauthTime` = 0,
-    `licenseProfile` =  NULL,
-    authenticate = function(...) {
-      tIn = Sys.time()
-      if (reauth_time %<% tIn) {
-        body <- c(`username` = self$`licenseProfile`$username,
-                  `password` = self$`licenseProfile`$password)
-
-        headerParams = c(`Content-Type` = "application/json",
-                         `User-Agent` = self$`user_agent`)
-
-        urlPath <- "/oauth2"
-        resp <- httr::POST(paste0(self$`licenseProfile`["oauth-server"], urlPath),
-                   headerParams, body = body, ...)
-
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-          returnObject <- PostAuth2Response$new()
-          result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-          self$`token` <- result$`id_token`
-          if (is.null(expire_secs)) {
-            msg = paste("authentication failed: invalid credentials")
-            rlang::abort(msg, class = "AmberCloudError")
-          }
-          expire_secs = result$`expiresIn`
-          if (is.null(expire_secs)) {
-            msg = paste("authentication failed: missing expiration")
-            rlang::abort(msg, class = "AmberCloudError")
-          }
-          self$`reauthTime` <- tIn + expire_secs - 60
-
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 499) {
-          Response$new("API client error", resp)
-        } else if (httr::status_code(resp) >= 500 && httr::status_code(resp) <= 599) {
-          Response$new("API server error", resp)
-        }
-
-      }
-      c(TRUE, NULL)
-
-    }, callApi = function(url, method, queryParams, headerParams, body, ...){
-        if (Sys.time() %>% self$`reauthTime`) {
-          self$authenticate()
-        }
-
-        headerParams <- append(headerParams, c(`Authorization` = paste0("Bearer ", self$`token`),
-                                               `User-Agent` = self$`user_agent`,
-                                               `Content-Type` = "application/json"))
-        headers <- httr::add_headers(headerParams)
-
-        if (method == "GET") {
-            resp <- httr::GET(url, queryParams, headers, ...)
-        }
-        else if (method == "POST") {
-            resp <- httr::POST(url, queryParams, headers, body = body, ...)
-        }
-        else if (method == "PUT") {
-            resp <- httr::PUT(url, queryParams, headers, body = body, ...)
-        }
-        else if (method == "DELETE") {
-            resp <- httr::DELETE(url, queryParams, headers, ...)
-        }
-        else {
-            stop("http method must be `GET`, `POST`, `PUT` or `DELETE`.")
-        }
-
-        if (httr::status_code(resp) < 200 || httr::status_code(resp) >= 300) {
-          msg = jsonLite::fromJSON(resp)
-          rlang::abort(msg, class = "AmberCloudError")
-        }
-
-        resp
-    }
-  ),
+  "AmberClient",
   public = list(
     license_id = NULL,
     license_file = NULL,
+    restPrivate = NULL,
     #' @param license_id key value for which amber server to use
     #' @param license_file path to the Amber license file containing user credentials and server address
     #' @param verify whether or not to verify the connection
     #' @param cert whether or not to require certification in connect
     #' @param timeout number of seconds to wait before failing connection
-    initialize = function(license_id = "default", license_file = "~/.Amber.license", verify = TRUE, cert = NULL, timeout = 360) {
-        
+    initialize = function(license_id = "default", license_file = "~/.Amber.license", verify = FALSE, cert = NULL, timeout = 60000) {
+        private <- Private$new()
+
         self$license_file <- license_file
         self$license_file <- Sys.getenv("AMBER_LICENSE_FILE", unset = self$license_file)
 
@@ -165,7 +88,7 @@ AmberClient <- R6::R6Class(
         self$license_id <- Sys.getenv("AMBER_LICENSE_ID", unset = self$license_id)
 
         if (!is.null(license_file)) {
-          license_path <- path_real(self$license_file)
+          license_path <- fs::path_expand(self$license_file)
           if (file.exists(license_path)){
             file_data = NULL
             tryCatch(
@@ -176,62 +99,74 @@ AmberClient <- R6::R6Class(
               }
             )
 
-            trycatch(
-              self$`licenseProfile` <- file_data[[self$license_id]],
-              error = function(c) {
+            tryCatch({
+              private$licenseProfile <- file_data[[self$license_id]]
+            }, error = function(c) {
                 msg = paste(cat("license_id ", license_id, " not found in license file"))
                 rlang::abort(msg, class = "AmberUserError")
               }
             )
           } else {
-            self$license_path <- rjson::fromJSON('{"username": "", "password": "", "server": "", "oauth-server": ""}')
+            private$licenseProfile <- rjson::fromJSON('{"username": "", "password": "", "server": "", "oauth-server": ""}')
           }
         } else {
-          self$license_path <- rjson::fromJSON('{"username": "", "password": "", "server": "", "oauth-server": ""}')
+          private$licenseProfile <- rjson::fromJSON('{"username": "", "password": "", "server": "", "oauth-server": ""}')
         }
 
-        tryCatch(
-          {
-            self$`licenseProfile`$username <- Sys.getenv("AMBER_USERNAME", self$`licenseProfile`$username)
-            self$`licenseProfile`$password <- Sys.getenv("AMBER_PASSWORD", self$`licenseProfile`$password)
-            self$`licenseProfile`$server <- Sys.getenv("AMBER_SERVER", self$`licenseProfile`$server)
+        tryCatch({
+            private$licenseProfile$username <- Sys.getenv("AMBER_USERNAME", unset = private$licenseProfile$username)
+            private$licenseProfile$password <- Sys.getenv("AMBER_PASSWORD", unset = private$licenseProfile$password)
+            private$licenseProfile$server <- Sys.getenv("AMBER_SERVER", unset = private$licenseProfile$server)
+
             # TODO: check if key is missing in license profile oauth-server
-            if (missing(self$`licenseProfile`$oauth-server || is.null(self$`licenseProfile`))) {
-              self$`licenseProfile`$oauth-server <- self$`licenseProfile`$server
+            if (is.null(private$licenseProfile$`oauth-server`) || is.null(private$licenseProfile)) {
+              private$licenseProfile$`oauth-server` <- private$licenseProfile$server
             }
-            self$`licenseProfile`$oauth-server <- Sys.getenv("AMBER_OAUTH_SERVER", self$`licenseProfile`$oauth-server)
-
-            self$`licenseProfile`$cert <- Sys.getenv("AMBER_SSL_CERT", cert)
-            verify_str = toLower(Sys.getenv("AMBER_SSL_VERIFY", "true"))
-            self$`licenseProfile`$verify <- TRUE # Default
-            if (!verify || verify_str == "false") {
-              self$`licenseProfile`$verify <- FALSE
-            }
-          },
-
-          error = function(c) {
-            msg = paste("missing field")
+            private$licenseProfile$`oauth-server` <- Sys.getenv("AMBER_OAUTH_SERVER", unset = private$licenseProfile$`oauth-server`)
+          }, error = function(c) {
+            msg = paste("missing field in license file")
             rlang::abort(msg, class = "AmberUserError")
           }
         )
 
-        if (!self$`licenseProfile`$verify) {
+        tryCatch({
+            if ("AMBER_SSL_CERT" %in% names(Sys.getenv())) {
+              private$licenseProfile$cert <- Sys.getenv("AMBER_SSL_CERT")
+            } else {
+              private$licenseProfile$cert <- cert
+            }
+            verify_str = tolower(Sys.getenv("AMBER_SSL_VERIFY", unset = "true"))
+            private$licenseProfile$verify <- TRUE # Default
+            if (!verify || verify_str == "false") {
+              private$licenseProfile$verify <- FALSE
+            }
+          }, error = function(c) {
+            msg = "error with verify or cert"
+            rlang::abort(msg, class = "AmberUserError")
+          }
+        )
+
+        if (!private$licenseProfile$verify) {
           # TODO: set verify to false in request thing
-          print("do something!")
+          httr::set_config(httr::config(ssl_verifypeer = FALSE))
         }
 
-        if (self$`licenseProfile`$username == ""){
+        private$timeout <- timeout
+
+        if (private$licenseProfile$username == ""){
           msg = paste("username not found in specified")
           rlang::abort(msg, class = "AmberUserError")
         }
-        if (self$`licenseProfile`$password == ""){
+        if (private$licenseProfile$password == ""){
           msg = paste("password not found in specified")
           rlang::abort(msg, class = "AmberUserError")
         }
-        if (self$`licenseProfile`$server == ""){
+        if (private$licenseProfile$server == ""){
           msg = paste("server not found in specified")
           rlang::abort(msg, class = "AmberUserError")
         }
+        
+        self$restPrivate <- private
 
     }, 
     #' @description List all sensors on current Amber server
@@ -243,14 +178,15 @@ AmberClient <- R6::R6Class(
         body <- NULL
 
         urlPath <- "/sensors"
-        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
-            method = "GET", queryParams = queryParams, headerParams = headers, body = body, ...)
+        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+            method = "GET", queryParams = queryParams, headerParams = headerParams, body = body)
 
         returnObject <- GetSensorsResponse$new()
-        result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        list_sensors <- t(returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8")))
         sensors = list()
-        for (sensor in result) {
-          sensors <- append(sensors, c(sensor$`sensorId` <- sensor$`label`))
+        for (sensor in split(list_sensors, f = col(list_sensors))) {
+          key <- sensor[[2]]
+          sensors[[key]] <- sensor[[1]]
         }
         sensors
 
@@ -270,12 +206,13 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/sensor"
-        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
+        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
+            body = body)
 
-          returnObject <- GetSensorResponse$new()
-          returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        returnObject <- GetSensorResponse$new()
+        returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        returnObject$toJSON()
 
     }, 
     #' @description Initialize a new sensor
@@ -286,40 +223,41 @@ AmberClient <- R6::R6Class(
     create_sensor = function(label = "") {
         queryParams <- list()
         headerParams <- character()
-        body <- c(`label` = label)
+        body <- list(`label` = label)
 
         urlPath <- "/sensor"
-        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
+        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "POST", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
+            body = body)
 
         returnObject <- PostSensorResponse$new()
-        result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-        result$`sensorId`
+        returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        returnObject$`sensorId`
 
     }, 
     #' @description Change the string identifier for the sensor
     #'
     #' @param sensor_id Boon generate identifier for the sensor
+    #' @param label String label for the sensor
     #'
     #' @return label
-    update_label = function(sensor_id) {
+    update_label = function(sensor_id, label) {
         queryParams <- list()
         headerParams <- character()
-        body <- NULL
+        body <- list(label = label)
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
         }
 
         urlPath <- "/sensor"
-        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
+        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "PUT", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
+            body = body)
 
         returnObject <- PutSensorResponse$new()
-        result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-        result$`label`
+        returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        returnObject$`label`
 
     },
     #' @description Set the configuration for the sensor
@@ -344,10 +282,10 @@ AmberClient <- R6::R6Class(
                                    learning_rate_denominator = 10000,
                                    learning_max_clusters = 1000,
                                    learning_max_samples = 1000000,
-                                   features = NULL) {
+                                   features = "") {
         queryParams <- list()
         headerParams <- character()
-        body <- character()
+        body <- list()
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
@@ -372,15 +310,17 @@ AmberClient <- R6::R6Class(
         body["learningRateDenominator"] <- learning_rate_denominator
         body["learningMaxClusters"] <- learning_max_clusters
         body["learningMaxSamples"] <- learning_max_samples
-        body["features"] <- features
+        # body["features"] <- features
 
         urlPath <- "/config"
-        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
+        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "POST", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
+            body = body)
+
 
         returnObject <- PostConfigResponse$new()
         returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        returnObject$toJSON()
 
     },
     #' @description Configure fusion vectors' rules
@@ -408,14 +348,15 @@ AmberClient <- R6::R6Class(
           }
         }
 
-        body <- c(features = features)
+        body <- list(features = features)
         urlPath <- "/config"
-        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
-            method = "PUT", queryParams = queryParams, headerParams = headersams,
-            body = body, ...)
+        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+            method = "PUT", queryParams = queryParams, headerParams = headerParams,
+            body = body)
 
         returnObject <- PutConfigResponse$new()
         returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        returnObject$toJSON()$features
 
     },
     #' @description Set new streaming parameters and turn on learning
@@ -435,7 +376,7 @@ AmberClient <- R6::R6Class(
                                   learning_max_samples = NULL) {
         queryParams <- list()
         headerParams <- character()
-        body <- c(streaming = character())
+        body <- list(streaming = list())
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
@@ -457,12 +398,13 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/config"
-        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
-            method = "PUT", queryParams = queryParams, headerParams = headersams,
-            body = body, ...)
+        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+            method = "PUT", queryParams = queryParams, headerParams = headerParams,
+            body = body)
 
         returnObject <- PutConfigResponse$new()
         returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        returnObject$toJSON()
 
     },
     #' @description Get the configuration for the given sensor
@@ -480,12 +422,13 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/config"
-        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
+        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
+            body = body)
 
         returnObject <- GetConfigResponse$new()
         returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        returnObject$toJSON()
 
     },
     #' @description Delete the given sensor ID
@@ -502,12 +445,13 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/sensor"
-        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
+        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "DELETE", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
+            body = body)
 
         returnObject <- Error$new()
-        result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        return(NULL)
 
     }, 
     #' @description Send data to Amber for processing
@@ -520,24 +464,29 @@ AmberClient <- R6::R6Class(
     stream_sensor = function(sensor_id, data, save_image = TRUE) {
         queryParams <- list()
         headerParams <- character()
-        body <- character()
+        body <- list()
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
         }
-        # TODO: convert data to csv
-        data_csv <- data
+        tryCatch(
+          data_csv <- self$restPrivate$convert_to_csv(data)
+        , error = function (c) {
+          msg = paste0("invalid data: ", c$message)
+          rlang::abort(msg, class = "AmberUserError")
+        })
 
         body["saveImage"] <- save_image
         body["data"] <- data_csv
 
         urlPath <- "/stream"
-        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
+        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "POST", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
+            body = body)
 
         returnObject <- PostStreamResponse$new()
         returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        returnObject$toJSON()
 
     }, 
     #' @description Send data to Amber for processing using sensor fusion
@@ -550,7 +499,6 @@ AmberClient <- R6::R6Class(
     stream_fusion = function(sensor_id, vector, submit = NULL) {
         queryParams <- list()
         headerParams <- character()
-        body <- character()
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
@@ -564,16 +512,16 @@ AmberClient <- R6::R6Class(
           rlang::abort(msg, class = "AmberUserError")
         }
 
-        body["vector"] <- vector
-        body["submitRule"] <- submit
+        body <- list("vector" = vector, "submitRule" = submit)
 
         urlPath <- "/stream"
-        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
+        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "PUT", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
+            body = body)
 
         returnObject <- PutStreamResponse$new()
         returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        returnObject$toJSON()
 
     },
     #' @description Gets the status of the sensor
@@ -591,12 +539,13 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/status"
-        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
-            method = "GET", queryParams = queryParams, headerParams = headersams,
-            body = body, ...)
+        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+            method = "GET", queryParams = queryParams, headerParams = headerParams,
+            body = body)
 
         returnObject <- GetStatusResponse$new()
         returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        returnObject$toJSON()
 
     },
     #' @description Gets pretrain status
@@ -614,12 +563,13 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/pretrain"
-        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
+        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
+            body = body)
 
         returnObject <- GetPretrainResponse$new()
         returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        returnObject$toJSON()
 
     },
     #' @description Use historical data to train the sensor
@@ -633,31 +583,33 @@ AmberClient <- R6::R6Class(
     pretrain_sensor = function(sensor_id, data, autotune_config = TRUE, block = TRUE) {
         queryParams <- list()
         headerParams <- character()
-        body <- character()
+        body <- list()
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
         }
 
-        # TODO: convert to csv
-        data_csv <- data
+        data_csv <- self$restPrivate$convert_to_csv(data)
         body["data"] <- data_csv
         body["autotuneConfig"] <- autotune_config
 
         urlPath <- "/pretrain"
-        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
-            method = "POST", queryParams = queryParams, headerParams = headersams,
-            body = body, ...)
+        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+            method = "POST", queryParams = queryParams, headerParams = headerParams,
+            body = body)
+
+        print(httr::status_code(resp))
+        print(resp)
 
         returnObject <- PostPretrainResponse$new()
-        result <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
         if (!block) {
-          result
+          returnObject$toJSON()
         } else {
           continue <- TRUE
           while (continue) {
             result <- self$get_pretrain_state(sensor_id)
-            if (result["state"] == "Pretraining") {
+            if (result$state == "Pretraining") {
               Sys.sleep(5)
             } else {
               continue <- FALSE
@@ -674,37 +626,46 @@ AmberClient <- R6::R6Class(
     #' @param pattern list of vectors to generate the root cause for
     #'
     #' @return vector of analytics for the given cluster ID or pattern vector
-    get_root_cause = function(sensor_id, cluster_id, pattern) {
-        queryParams <- character()
+    get_root_cause = function(sensor_id, cluster_id, pattern_list) {
+        queryParams <- list()
         headerParams <- character()
 
-        if (!missing(cluster_id) && !missing(cluster_id)) {
-          msg = "cannot specify both patterns and cluster IDs for analysis"
+        if (!missing(cluster_id) && !missing(pattern_list)) {
+          msg = "cannot specify both pattern_lists and cluster IDs for analysis"
           rlang::abort(msg, class = "AmberUserError")
         }
-        if (missing(cluster_id) && missing(cluster_id)) {
-          msg = "Must specify either patterns or cluster IDs for analysis"
+        if (missing(cluster_id) && missing(pattern_list)) {
+          msg = "Must specify either pattern_lists or cluster IDs for analysis"
           rlang::abort(msg, class = "AmberUserError")
         }
         if (!missing(sensor_id)) {
-            headerParams["sensorId"] <- sensor_id
+          headerParams["sensorId"] <- sensor_id
         }
 
         if (!missing(cluster_id)) {
-            queryParams["clusterID"] <- cluster_id
+          cluster_id_str <- paste0("[", paste0(cluster_id, collapse = ","), "]")
+          queryParams["clusterID"] <- cluster_id_str
         }
 
-        if (!missing(pattern)) {
-            queryParams["pattern"] <- pattern
+        if (!missing(pattern_list)) {
+          if (length(lengths(pattern_list)) == 1) { #only 1 pattern provided
+            pattern_list = list(pattern_list)
+          } else {
+            for (i in seq_along(pattern_list)) {
+              pattern_list[[i]] <- paste0(pattern_list[[i]], collapse = ",")
+            }
+            pattern_list_str <- paste0("[[", paste(pattern_list, collapse = "],["), "]]")
+          }
+          queryParams["pattern"] <- pattern_list_str
         }
 
         urlPath <- "/rootCause"
-        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
-            method = "GET", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
+        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+            method = "GET", queryParams = queryParams, headerParams = headerParams)
 
         returnObject <- GetRootCauseResponse$new()
         returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        returnObject$toJSON()
 
     }, 
     #' @description Get the current version numbers for the Amber server
@@ -716,13 +677,172 @@ AmberClient <- R6::R6Class(
         body <- NULL
 
         urlPath <- "/version"
-        resp <- self$callApi(url = paste0(self$`licenseProfile`$server, urlPath),
+        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
-            body = body, ...)
+            body = body)
 
         returnObject <- Version$new()
         returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        returnObject$toJSON()
 
+    }
+  )
+)
+
+Private <- R6::R6Class(
+  "Private",
+  public = list(
+    `user_agent` = "Boon Logic / amber-r-sdk / requests",
+    verify = TRUE,
+    cert = NULL,
+    timeout = 360,
+    token = NULL,
+    reauthTime = Sys.time(),
+    licenseProfile =  NULL,
+    authenticate = function() {
+      tIn = Sys.time()
+      if (self$reauthTime < tIn) {
+        queryParams <- c()
+        headerParams = c(`Content-Type` = "application/json",
+                         `User-Agent` = self$`user_agent`)
+        body <- list(`username` = self$licenseProfile$username,
+                  `password` = self$licenseProfile$password)
+
+        headers <- httr::add_headers(headerParams)
+
+        urlPath <- "/oauth2"
+        resp <- httr::POST(paste0(self$licenseProfile["oauth-server"], urlPath),
+                           queryParams, headers, body = body, encode = "json")
+
+        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
+          returnObject <- PostAuth2Response$new()
+          returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+          self$token <- returnObject$idToken
+          if (is.null(self$token)) {
+            msg = paste("authentication failed: invalid credentials")
+            rlang::abort(msg, class = "AmberCloudError")
+          }
+          expire_secs = returnObject$`expiresIn`
+          if (is.null(expire_secs)) {
+            msg = paste("authentication failed: missing expiration")
+            rlang::abort(msg, class = "AmberCloudError")
+          }
+          self$reauthTime <- tIn + strtoi(expire_secs) - 60
+
+        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 599) {
+            msg = httr::content(resp)$message
+            rlang::abort(msg, class = "AmberCloudError")
+        }
+
+      } else {
+        c(TRUE, NULL)
+      }
+
+    }, callApi = function(url, method, queryParams, headerParams, body){
+        if (Sys.time() > self$reauthTime) {
+          self$authenticate()
+        }
+
+        headerParams <- append(headerParams, c(`Authorization` = paste0("Bearer ", self$token),
+                                               `User-Agent` = self$`user_agent`,
+                                               `Content-Type` = "application/json"))
+        headers <- httr::add_headers(headerParams)
+
+        if (method == "GET") {
+            resp <- httr::GET(url, query = queryParams, headers, httr::timeout(self$timeout))
+        }
+        else if (method == "POST") {
+            resp <- httr::POST(url, query = queryParams, headers, body = body, encode = "json", httr::timeout(self$timeout))
+        }
+        else if (method == "PUT") {
+            resp <- httr::PUT(url, query = queryParams, headers, body = body, encode = "json", httr::timeout(self$timeout))
+        }
+        else if (method == "DELETE") {
+            resp <- httr::DELETE(url, query = queryParams, headers, httr::timeout(self$timeout))
+        }
+        else {
+            stop("http method must be `GET`, `POST`, `PUT` or `DELETE`.")
+        }
+
+        if (httr::status_code(resp) < 200 || httr::status_code(resp) >= 300) {
+          msg = httr::content(resp)$message
+          rlang::abort(msg, class = "AmberCloudError")
+        }
+
+        resp
+    }, convert_to_csv = function(data) {
+        ndim <- self$validate_dims(data)
+
+        if (ndim == 0) {
+          data_flat <- list(data)
+        } else if (ndim == 1) {
+          data_flat <- data
+        } else if (ndim == 2) {
+          data_flat <- unlist(data)
+        }
+
+        for (d in data_flat) {
+          if (!is.numeric(d)) {
+              # rlang::abort(paste0("contained ", d, " which is not numeric"), class = "ValueError")
+              rlang::abort("testing fail")
+          }
+        }
+
+        paste(lapply(data_flat, function(d) toString(as.numeric(d))), collapse = ",")
+
+    }, validate_dims = function(data) {
+        # not-iterable data is a single scalar data point
+        if (!self$is.iterable(data)) {
+          return(0)
+        }
+
+        # iterable and unnested data is a 1-d array
+        if (!(TRUE %in% lapply(data, function(x) self$is.iterable(x)))) {
+          if (length(data) == 0) {
+            rlang::abort("empty", class = "ValueError")
+          }
+          return(1)
+        }
+
+        # iterable and nested data is a 2-d array
+        if (FALSE %in% lapply(data, function(x) self$is.iterable(x))) {
+          rlang::abort("Cannot mix nested scalars and iterables", class = "ValueError")
+        }
+
+        # check for irregular arrays
+        subLengths <- lapply(data, function(d) length(d))
+        if (length(unique(subLengths)) > 1) {
+          rlang::abort("nested sublists must have equal lengths")
+        }
+
+        flattened_2d <- unlist(data, recursive = FALSE)
+
+        if (TRUE %in% lapply(flattened_2d, function(x) self$is.iterable(x))) {
+          rlang::abort("Cannot be nested deeper than list-of-lists", class = "ValueError")
+        }
+
+        if (subLengths[[1]] == 0) {
+          rlang::abort("empty", class = "ValueError")
+        }
+
+        return(2)
+
+    }, is.iterable = function(x) {
+        if (is.character(x)) {
+          return(FALSE)
+        }
+
+        value <- TRUE
+        if (identical(lengths(x), as.integer(1))) {  
+          return(FALSE)
+        }
+        tryCatch({
+          iterators::iter(x)
+        }, error = function(c) {
+          value <<- FALSE
+        })
+
+        value
     }
   )
 )

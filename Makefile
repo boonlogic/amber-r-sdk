@@ -22,6 +22,11 @@ compile:
 # add additional .license files in test directory to expand / customize tests
 # test-%: 
 # 	AMBER_TEST_LICENSE_ID=$* go test -timeout 30m -v -coverprofile .coverage.out .
+test:
+	make test-default
+
+test-%:
+	AMBER_TEST_LICENSE_ID=$* RScript bin/test.R
 
 init:
 	RScript requirements.R
