@@ -92,7 +92,7 @@ AmberClient <- R6::R6Class(
           if (file.exists(license_path)){
             file_data = NULL
             tryCatch(
-              file_data <- rjson::fromJSON(file = license_path),
+              file_data <- jsonlite::fromJSON(file = license_path),
               error = function(c) {
                 msg = paste(cat("JSON formatting error in license file: ", license_path))
                 rlang::abort(msg, class = "AmberUserError")
@@ -107,10 +107,10 @@ AmberClient <- R6::R6Class(
               }
             )
           } else {
-            private$licenseProfile <- rjson::fromJSON('{"username": "", "password": "", "server": "", "oauth-server": ""}')
+            private$licenseProfile <- jsonlite::fromJSON('{"username": "", "password": "", "server": "", "oauth-server": ""}')
           }
         } else {
-          private$licenseProfile <- rjson::fromJSON('{"username": "", "password": "", "server": "", "oauth-server": ""}')
+          private$licenseProfile <- jsonlite::fromJSON('{"username": "", "password": "", "server": "", "oauth-server": ""}')
         }
 
         tryCatch({

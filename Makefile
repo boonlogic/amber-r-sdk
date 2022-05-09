@@ -14,7 +14,7 @@ generate-client: ## generate amber swagger client code based on json schema file
 docs: ## generate documentation
 	RScript bin/gen-docs.R
 
-compile:
+build:
 	R CMD build .
 	R CMD check BoonAmber*.tar.gz --no-manual
 

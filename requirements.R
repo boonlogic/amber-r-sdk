@@ -1,11 +1,16 @@
-install.packages("httr", repos = "https://repo.miserver.it.umich.edu/cran/")
-install.packages("R6", repos = "https://repo.miserver.it.umich.edu/cran/")
-install.packages("fs", repos = "https://repo.miserver.it.umich.edu/cran/")
-install.packages("stringr", repos = "https://repo.miserver.it.umich.edu/cran/")
-install.packages("rjson", repos = "https://repo.miserver.it.umich.edu/cran/")
-install.packages("rlang", repos = "https://repo.miserver.it.umich.edu/cran/")
-install.packages("testthat", repos = "https://repo.miserver.it.umich.edu/cran/")
-install.packages("formatR", repos = "https://repo.miserver.it.umich.edu/cran/")
-install.packages("devtools", repos = "https://repo.miserver.it.umich.edu/cran/")
-install.packages("jsonlite", repos = "https://repo.miserver.it.umich.edu/cran/")
-install.packages("iterators", repos = "https://repo.miserver.it.umich.edu/cran/")
+packages <- list("httr",
+				 "R6",
+				 "fs",
+				 "rlang",
+				 "testthat",
+				 "formatR",
+				 "devtools",
+				 "jsonlite",
+				 "iterators",
+				 "gms")
+
+for (package in packages) {
+	if (!(package %in% installed.packages())) {
+		install.packages(package, repos = "https://repo.miserver.it.umich.edu/cran/")
+	}
+}

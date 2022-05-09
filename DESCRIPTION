@@ -6,6 +6,15 @@ Author: person("Swagger Codegen community", email = "apiteam@swagger.io", role =
 Maintainer: Boon Logic <nano-support@boonlogic.com>
 Description: A Boon Logic Amber API Server to access the REST API function calls for the Amber utility. Need a license with Boon Logic for authentication.
 Depends: R (>= 3.3.3)
+		 httr
+		 jsonlite
+		 R6
+		 fs
+		 rlang
+		 testthat
+		 formatR
+		 devtools
+		 iterators
 Encoding: UTF-8
 License: MIT + file LICENSE
 RoxygenNote: 7.1.2
