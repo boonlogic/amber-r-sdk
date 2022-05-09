@@ -111,7 +111,7 @@ PostConfigResponse <- R6::R6Class(
       PostConfigResponseObject
     },
     fromJSON = function(PostConfigResponseJson) {
-      PostConfigResponseObject <- jsonlite::fromJSON(PostConfigResponseJson)
+      PostConfigResponseObject <- jsonlite::fromJSON(PostConfigResponseJson, simplifyVector = FALSE)
       if (!is.null(PostConfigResponseObject$`anomalyHistoryWindow`)) {
         anomalyHistoryWindowObject <- BigDecimal$new()
         anomalyHistoryWindowObject$fromJSON(jsonlite::toJSON(PostConfigResponseObject$anomalyHistoryWindow, auto_unbox = TRUE))

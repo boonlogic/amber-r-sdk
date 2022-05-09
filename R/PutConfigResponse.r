@@ -42,7 +42,7 @@ PutConfigResponse <- R6::R6Class(
       PutConfigResponseObject
     },
     fromJSON = function(PutConfigResponseJson) {
-      PutConfigResponseObject <- jsonlite::fromJSON(PutConfigResponseJson)
+      PutConfigResponseObject <- jsonlite::fromJSON(PutConfigResponseJson, simplifyVector = FALSE)
       if (!is.null(PutConfigResponseObject$`features`)) {
         self$`features` <- lapply(PutConfigResponseObject$`features`, function(x) {
           featuresObject <- FusionConfig$new()

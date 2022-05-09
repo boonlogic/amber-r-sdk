@@ -120,7 +120,7 @@ GetConfigResponse <- R6::R6Class(
       GetConfigResponseObject
     },
     fromJSON = function(GetConfigResponseJson) {
-      GetConfigResponseObject <- jsonlite::fromJSON(GetConfigResponseJson)
+      GetConfigResponseObject <- jsonlite::fromJSON(GetConfigResponseJson, simplifyVector = FALSE)
       if (!is.null(GetConfigResponseObject$`anomalyHistoryWindow`)) {
         anomalyHistoryWindowObject <- BigDecimal$new()
         anomalyHistoryWindowObject$fromJSON(jsonlite::toJSON(GetConfigResponseObject$anomalyHistoryWindow, auto_unbox = TRUE))
