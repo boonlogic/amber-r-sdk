@@ -12,7 +12,7 @@ generate-client: ## generate amber swagger client code based on json schema file
 	swagger-codegen generate -i swagger.json -l r
 
 docs: ## generate documentation
-	RScript bin/gen-docs.R
+	Rscript bin/gen-docs.R
 
 build:
 	R CMD build .
@@ -26,7 +26,7 @@ test:
 	make test-default
 
 test-%:
-	AMBER_TEST_LICENSE_ID=$* RScript bin/test.R
+	AMBER_TEST_LICENSE_ID=$* Rscript bin/test.R
 
 init:
 	Rscript bin/init.R && \
