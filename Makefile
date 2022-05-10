@@ -2,8 +2,12 @@
 
 .PHONY: test format format-check clean generate-client docs go-check
 
+init:
+	Rscript bin/init.R
+
 format-check: ## check for format errors
-	Rscript bin/format.R
+	# # formatR::tidy_dir("R", recursive = TRUE)
+	Rscript -e 'gms::codeCheck("R", debug = TRUE)'
 
 # clean: ## clean up go cache and modcache
 # 	go clean -modcache -cache
@@ -12,7 +16,7 @@ generate-client: ## generate amber swagger client code based on json schema file
 	swagger-codegen generate -i swagger.json -l r
 
 docs: ## generate documentation
-	Rscript bin/gen-docs.R
+	Rscript -e 'devtools::document(quiet = TRUE)'
 
 build:
 	R CMD build .
@@ -26,8 +30,5 @@ test:
 	make test-default
 
 test-%:
-	AMBER_TEST_LICENSE_ID=$* Rscript bin/test.R
-
-init:
-	Rscript bin/init.R && \
-	Rscript bin/requirements.R
+	Rscript -e 'renv::restore()' && \
+	AMBER_TEST_LICENSE_ID=$* Rscript -e 'devtools::test()'
