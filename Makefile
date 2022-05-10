@@ -3,7 +3,7 @@
 .PHONY: test format format-check clean generate-client docs go-check
 
 format-check: ## check for format errors
-	RScript bin/format.R
+	Rscript bin/format.R
 
 # clean: ## clean up go cache and modcache
 # 	go clean -modcache -cache
@@ -29,5 +29,5 @@ test-%:
 	AMBER_TEST_LICENSE_ID=$* RScript bin/test.R
 
 init:
-	RScript bin/init.R && \
-	RScript bin/requirements.R
+	Rscript bin/init.R && \
+	Rscript bin/requirements.R
