@@ -112,6 +112,7 @@ AmberClient <- R6::R6Class(
           private$licenseProfile <- rjson::fromJSON('{"username": "", "password": "", "server": "", "oauth-server": ""}')
         }
 
+        print(private$licenseProfile)
         tryCatch({
             private$licenseProfile$username <- Sys.getenv("AMBER_USERNAME", unset = private$licenseProfile$username)
             private$licenseProfile$password <- Sys.getenv("AMBER_PASSWORD", unset = private$licenseProfile$password)
