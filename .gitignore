@@ -44,3 +44,4 @@ swagger.json
 *.DS_Store
 
 renv*
+.Rprofile
