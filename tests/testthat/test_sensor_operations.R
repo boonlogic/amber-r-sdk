@@ -19,12 +19,14 @@ create_amber_client <- function() {
         AmberClient$new(amber_license_id, amber_license_file)
     } else {
         # TODO: secrets
-        license_profile
-        Sys.setenv("AMBER_USERNAME" = license_profile["username"],
-                   "AMBER_PASSWORD" = license_profile["password"],
-                   "AMBER_SERVER"  = license_profile["server"],
-                   "AMBER_OAUTH_SERVER" = license_profile["oauth-server"])
-        AmberClient$new(NULL, NULL)
+        # license_profile
+        # Sys.setenv("AMBER_USERNAME" = license_profile["username"],
+        #            "AMBER_PASSWORD" = license_profile["password"],
+        #            "AMBER_SERVER"  = license_profile["server"],
+        #            "AMBER_OAUTH_SERVER" = license_profile["oauth-server"])
+        # AmberClient$new(NULL, NULL)
+        amber_license_file <-"tests/testthat/test.Amber.license"
+        AmberClient$new(amber_license_id, amber_license_file)
     }
 
 }
