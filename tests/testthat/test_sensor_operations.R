@@ -15,6 +15,8 @@ create_amber_client <- function() {
         }
     }
 
+    print(amber_license_file)
+    print(is.null(amber_license_file))
     if (!is.null(amber_license_file)) {
         AmberClient$new(amber_license_id, amber_license_file)
     } else {
