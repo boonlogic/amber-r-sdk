@@ -99,7 +99,7 @@ AmberClient <- R6::R6Class(
             )
 
             print(file_data)
-            print()
+            print("this is key")
             print(file_data[[self$license_id]])
             tryCatch({
               private$licenseProfile <- file_data[[self$license_id]]
