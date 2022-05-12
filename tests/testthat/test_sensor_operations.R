@@ -17,11 +17,12 @@ create_amber_client <- function() {
 
     print(amber_license_file)
     print(is.null(amber_license_file))
+    print(getwd())
+    file_data <- rjson::fromJSON(file = amber_license_file, simplify = FALSE)
+    print(file_data)
     if (!is.null(amber_license_file)) {
         AmberClient$new(amber_license_id, amber_license_file)
     } else {
-        print("secrets")
-        print(getwd())
         # TODO: secrets
         # license_profile
         # Sys.setenv("AMBER_USERNAME" = license_profile["username"],
@@ -30,8 +31,7 @@ create_amber_client <- function() {
         #            "AMBER_OAUTH_SERVER" = license_profile["oauth-server"])
         # AmberClient$new(NULL, NULL)
         amber_license_file <- "test.Amber.license"
-        file_data <- rjson::fromJSON(file = amber_license_file, simplify = FALSE)
-        print(file_data)
+
         AmberClient$new(amber_license_id, amber_license_file)
     }
 
