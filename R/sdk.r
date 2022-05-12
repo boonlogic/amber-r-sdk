@@ -98,9 +98,6 @@ AmberClient <- R6::R6Class(
               }
             )
 
-            print(file_data)
-            print("this is key")
-            print(file_data[[self$license_id]])
             tryCatch({
               private$licenseProfile <- file_data[[self$license_id]]
             }, error = function(c) {
@@ -599,9 +596,6 @@ AmberClient <- R6::R6Class(
         resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "POST", queryParams = queryParams, headerParams = headerParams,
             body = body)
-
-        print(httr::status_code(resp))
-        print(resp)
 
         returnObject <- PostPretrainResponse$new()
         returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
