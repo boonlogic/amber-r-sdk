@@ -33,3 +33,13 @@ test:
 test-%:
 	Rscript -e 'renv::restore()' && \
 	AMBER_TEST_LICENSE_ID=$* Rscript -e 'devtools::test(reporter = c("summary", "fail"))'
+
+test-local: test-env-check
+	Rscript -e 'renv::restore()' && \
+	Rscript -e 'devtools::test(reporter = c("summary", "fail"))'
+
+test-env-check:
+	@if [[ "${AMBER_TEST_LICENSE_FILE}" == "" || "${AMBER_TEST_LICENSE_ID}" == "" ]]; then \
+		echo "AMBER_TEST_LICENSE_FILE and AMBER_TEST_LICENSE_ID are required in environment"; \
+		exit 1; \
+	fi
