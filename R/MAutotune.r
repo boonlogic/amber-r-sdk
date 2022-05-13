@@ -74,7 +74,7 @@ MAutotune <- R6::R6Class(
     toJSON = function() {
       MAutotuneObject <- list()
       if (!is.null(self$`VersionNumber`)) {
-        MAutotuneObject[['VersionNumber']] <- self$`VersionNumber`
+        MAutotuneObject[['VersionNumber']] <- self$`VersionNumber`$toJSON()
       }
       if (!is.null(self$`m_AutotuningInProgress`)) {
         MAutotuneObject[['m_AutotuningInProgress']] <- self$`m_AutotuningInProgress`
@@ -95,10 +95,10 @@ MAutotune <- R6::R6Class(
         MAutotuneObject[['m_FeaturesToTuneArray']] <- self$`m_FeaturesToTuneArray`
       }
       if (!is.null(self$`m_NCP`)) {
-        MAutotuneObject[['m_NCP']] <- self$`m_NCP`
+        MAutotuneObject[['m_NCP']] <- self$`m_NCP`$toJSON()
       }
       if (!is.null(self$`m_AP`)) {
-        MAutotuneObject[['m_AP']] <- self$`m_AP`
+        MAutotuneObject[['m_AP']] <- self$`m_AP`$toJSON()
       }
 
       MAutotuneObject
@@ -107,7 +107,8 @@ MAutotune <- R6::R6Class(
       MAutotuneObject <- jsonlite::fromJSON(MAutotuneJson, simplifyVector = FALSE)
       if (!is.null(MAutotuneObject$`VersionNumber`)) {
         VersionNumberObject <- VersionNumber$new()
-        self$`VersionNumber` <- MAutotuneObject$VersionNumber
+        VersionNumberObject$fromJSON(jsonlite::toJSON(MAutotuneObject$VersionNumber, auto_unbox = TRUE))
+        self$`VersionNumber` <- VersionNumberObject
       }
       if (!is.null(MAutotuneObject$`m_AutotuningInProgress`)) {
         self$`m_AutotuningInProgress` <- MAutotuneObject$`m_AutotuningInProgress`
@@ -129,11 +130,13 @@ MAutotune <- R6::R6Class(
       }
       if (!is.null(MAutotuneObject$`m_NCP`)) {
         m_NCPObject <- MNCP$new()
-        self$`m_NCP` <- MAutotuneObject$m_NCP
+        m_NCPObject$fromJSON(jsonlite::toJSON(MAutotuneObject$m_NCP, auto_unbox = TRUE))
+        self$`m_NCP` <- m_NCPObject
       }
       if (!is.null(MAutotuneObject$`m_AP`)) {
         m_APObject <- MAP$new()
-        self$`m_AP` <- MAutotuneObject$m_AP
+        m_APObject$fromJSON(jsonlite::toJSON(MAutotuneObject$m_AP, auto_unbox = TRUE))
+        self$`m_AP` <- m_APObject
       }
     },
     toJSONString = function() {
@@ -149,15 +152,15 @@ MAutotune <- R6::R6Class(
            "m_NCP": %s,
            "m_AP": %s
         }',
-        self$`VersionNumber`,
+        self$`VersionNumber`$toJSON(),
         self$`m_AutotuningInProgress`,
         self$`m_PercentComplete`,
         self$`m_AutotuningSucceeded`,
         self$`m_NumPatternsToAutotune`,
         self$`m_ErrorStringBuffer`,
         lapply(self$`m_FeaturesToTuneArray`, function(x) paste(paste0('"', x, '"'), sep=",")),
-        self$`m_NCP`,
-        self$`m_AP`
+        self$`m_NCP`$toJSON(),
+        self$`m_AP`$toJSON()
       )
     },
     fromJSONString = function(MAutotuneJson) {
