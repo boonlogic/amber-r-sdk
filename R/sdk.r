@@ -181,11 +181,10 @@ AmberClient <- R6::R6Class(
             method = "GET", queryParams = queryParams, headerParams = headerParams, body = body)
 
         returnObject <- GetSensorsResponse$new()
-        list_sensors <- t(returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8")))
+        list_sensors <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
         sensors = list()
-        for (sensor in split(list_sensors, f = col(list_sensors))) {
-          key <- sensor[[2]]
-          sensors[[key]] <- sensor[[1]]
+        for (sensor in list_sensors) {
+          sensors[[sensor$sensorId]] <- sensor$label
         }
         sensors
 

@@ -75,7 +75,7 @@ MAP <- R6::R6Class(
       MAPObject
     },
     fromJSON = function(MAPJson) {
-      MAPObject <- jsonlite::fromJSON(MAPJson)
+      MAPObject <- jsonlite::fromJSON(MAPJson, simplifyVector = FALSE)
       if (!is.null(MAPObject$`VersionNumber`)) {
         VersionNumberObject <- VersionNumber$new()
         VersionNumberObject$fromJSON(jsonlite::toJSON(MAPObject$VersionNumber, auto_unbox = TRUE))
@@ -116,7 +116,7 @@ MAP <- R6::R6Class(
       )
     },
     fromJSONString = function(MAPJson) {
-      MAPObject <- jsonlite::fromJSON(MAPJson)
+      MAPObject <- jsonlite::fromJSON(MAPJson, simplifyVector = FALSE)
       VersionNumberObject <- VersionNumber$new()
       self$`VersionNumber` <- VersionNumberObject$fromJSON(jsonlite::toJSON(MAPObject$VersionNumber, auto_unbox = TRUE))
       self$`m_AutotuneRange` <- MAPObject$`m_AutotuneRange`
@@ -127,3 +127,4 @@ MAP <- R6::R6Class(
     }
   )
 )
+

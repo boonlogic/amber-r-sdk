@@ -50,7 +50,7 @@ PutStreamFeature <- R6::R6Class(
       PutStreamFeatureObject
     },
     fromJSON = function(PutStreamFeatureJson) {
-      PutStreamFeatureObject <- jsonlite::fromJSON(PutStreamFeatureJson)
+      PutStreamFeatureObject <- jsonlite::fromJSON(PutStreamFeatureJson, simplifyVector = FALSE)
       if (!is.null(PutStreamFeatureObject$`label`)) {
         self$`label` <- PutStreamFeatureObject$`label`
       }
@@ -74,10 +74,11 @@ PutStreamFeature <- R6::R6Class(
       )
     },
     fromJSONString = function(PutStreamFeatureJson) {
-      PutStreamFeatureObject <- jsonlite::fromJSON(PutStreamFeatureJson)
+      PutStreamFeatureObject <- jsonlite::fromJSON(PutStreamFeatureJson, simplifyVector = FALSE)
       self$`label` <- PutStreamFeatureObject$`label`
       self$`value` <- PutStreamFeatureObject$`value`
       self$`ts` <- PutStreamFeatureObject$`ts`
     }
   )
 )
+

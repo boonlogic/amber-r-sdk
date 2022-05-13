@@ -42,7 +42,7 @@ MRecentTimes <- R6::R6Class(
       MRecentTimesObject
     },
     fromJSON = function(MRecentTimesJson) {
-      MRecentTimesObject <- jsonlite::fromJSON(MRecentTimesJson)
+      MRecentTimesObject <- jsonlite::fromJSON(MRecentTimesJson, simplifyVector = FALSE)
       if (!is.null(MRecentTimesObject$`VersionNumber`)) {
         VersionNumberObject <- VersionNumber$new()
         VersionNumberObject$fromJSON(jsonlite::toJSON(MRecentTimesObject$VersionNumber, auto_unbox = TRUE))
@@ -63,10 +63,11 @@ MRecentTimes <- R6::R6Class(
       )
     },
     fromJSONString = function(MRecentTimesJson) {
-      MRecentTimesObject <- jsonlite::fromJSON(MRecentTimesJson)
+      MRecentTimesObject <- jsonlite::fromJSON(MRecentTimesJson, simplifyVector = FALSE)
       VersionNumberObject <- VersionNumber$new()
       self$`VersionNumber` <- VersionNumberObject$fromJSON(jsonlite::toJSON(MRecentTimesObject$VersionNumber, auto_unbox = TRUE))
       self$`m_Values` <- MRecentTimesObject$`m_Values`
     }
   )
 )
+

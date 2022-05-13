@@ -55,49 +55,39 @@ StreamingParameters <- R6::R6Class(
     toJSON = function() {
       StreamingParametersObject <- list()
       if (!is.null(self$`anomalyHistoryWindow`)) {
-        StreamingParametersObject[['anomalyHistoryWindow']] <- self$`anomalyHistoryWindow`$toJSON()
+        StreamingParametersObject[['anomalyHistoryWindow']] <- self$`anomalyHistoryWindow`
       }
       if (!is.null(self$`learningRateNumerator`)) {
-        StreamingParametersObject[['learningRateNumerator']] <- self$`learningRateNumerator`$toJSON()
+        StreamingParametersObject[['learningRateNumerator']] <- self$`learningRateNumerator`
       }
       if (!is.null(self$`learningRateDenominator`)) {
-        StreamingParametersObject[['learningRateDenominator']] <- self$`learningRateDenominator`$toJSON()
+        StreamingParametersObject[['learningRateDenominator']] <- self$`learningRateDenominator`
       }
       if (!is.null(self$`learningMaxClusters`)) {
-        StreamingParametersObject[['learningMaxClusters']] <- self$`learningMaxClusters`$toJSON()
+        StreamingParametersObject[['learningMaxClusters']] <- self$`learningMaxClusters`
       }
       if (!is.null(self$`learningMaxSamples`)) {
-        StreamingParametersObject[['learningMaxSamples']] <- self$`learningMaxSamples`$toJSON()
+        StreamingParametersObject[['learningMaxSamples']] <- self$`learningMaxSamples`
       }
 
       StreamingParametersObject
     },
     fromJSON = function(StreamingParametersJson) {
-      StreamingParametersObject <- jsonlite::fromJSON(StreamingParametersJson)
+      StreamingParametersObject <- jsonlite::fromJSON(StreamingParametersJson, simplifyVector = FALSE)
       if (!is.null(StreamingParametersObject$`anomalyHistoryWindow`)) {
-        anomalyHistoryWindowObject <- BigDecimal$new()
-        anomalyHistoryWindowObject$fromJSON(jsonlite::toJSON(StreamingParametersObject$anomalyHistoryWindow, auto_unbox = TRUE))
-        self$`anomalyHistoryWindow` <- anomalyHistoryWindowObject
+        self$`anomalyHistoryWindow` <- StreamingParametersObject$anomalyHistoryWindow
       }
       if (!is.null(StreamingParametersObject$`learningRateNumerator`)) {
-        learningRateNumeratorObject <- BigDecimal$new()
-        learningRateNumeratorObject$fromJSON(jsonlite::toJSON(StreamingParametersObject$learningRateNumerator, auto_unbox = TRUE))
-        self$`learningRateNumerator` <- learningRateNumeratorObject
+        self$`learningRateNumerator` <- StreamingParametersObject$learningRateNumerator
       }
       if (!is.null(StreamingParametersObject$`learningRateDenominator`)) {
-        learningRateDenominatorObject <- BigDecimal$new()
-        learningRateDenominatorObject$fromJSON(jsonlite::toJSON(StreamingParametersObject$learningRateDenominator, auto_unbox = TRUE))
-        self$`learningRateDenominator` <- learningRateDenominatorObject
+        self$`learningRateDenominator` <- StreamingParametersObject$learningRateDenominator
       }
       if (!is.null(StreamingParametersObject$`learningMaxClusters`)) {
-        learningMaxClustersObject <- BigDecimal$new()
-        learningMaxClustersObject$fromJSON(jsonlite::toJSON(StreamingParametersObject$learningMaxClusters, auto_unbox = TRUE))
-        self$`learningMaxClusters` <- learningMaxClustersObject
+        self$`learningMaxClusters` <- StreamingParametersObject$learningMaxClusters
       }
       if (!is.null(StreamingParametersObject$`learningMaxSamples`)) {
-        learningMaxSamplesObject <- BigDecimal$new()
-        learningMaxSamplesObject$fromJSON(jsonlite::toJSON(StreamingParametersObject$learningMaxSamples, auto_unbox = TRUE))
-        self$`learningMaxSamples` <- learningMaxSamplesObject
+        self$`learningMaxSamples` <- StreamingParametersObject$learningMaxSamples
       }
     },
     toJSONString = function() {
@@ -109,25 +99,21 @@ StreamingParameters <- R6::R6Class(
            "learningMaxClusters": %s,
            "learningMaxSamples": %s
         }',
-        self$`anomalyHistoryWindow`$toJSON(),
-        self$`learningRateNumerator`$toJSON(),
-        self$`learningRateDenominator`$toJSON(),
-        self$`learningMaxClusters`$toJSON(),
-        self$`learningMaxSamples`$toJSON()
+        self$`anomalyHistoryWindow`,
+        self$`learningRateNumerator`,
+        self$`learningRateDenominator`,
+        self$`learningMaxClusters`,
+        self$`learningMaxSamples`
       )
     },
     fromJSONString = function(StreamingParametersJson) {
-      StreamingParametersObject <- jsonlite::fromJSON(StreamingParametersJson)
-      BigDecimalObject <- BigDecimal$new()
-      self$`anomalyHistoryWindow` <- BigDecimalObject$fromJSON(jsonlite::toJSON(StreamingParametersObject$anomalyHistoryWindow, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`learningRateNumerator` <- BigDecimalObject$fromJSON(jsonlite::toJSON(StreamingParametersObject$learningRateNumerator, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`learningRateDenominator` <- BigDecimalObject$fromJSON(jsonlite::toJSON(StreamingParametersObject$learningRateDenominator, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`learningMaxClusters` <- BigDecimalObject$fromJSON(jsonlite::toJSON(StreamingParametersObject$learningMaxClusters, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`learningMaxSamples` <- BigDecimalObject$fromJSON(jsonlite::toJSON(StreamingParametersObject$learningMaxSamples, auto_unbox = TRUE))
+      StreamingParametersObject <- jsonlite::fromJSON(StreamingParametersJson, simplifyVector = FALSE)
+      self$`anomalyHistoryWindow` <- StreamingParametersObject$anomalyHistoryWindow
+      self$`learningRateNumerator` <- StreamingParametersObject$learningRateNumerator
+      self$`learningRateDenominator` <- StreamingParametersObject$learningRateDenominator
+      self$`learningMaxClusters` <- StreamingParametersObject$learningMaxClusters
+      self$`learningMaxSamples` <- StreamingParametersObject$learningMaxSamples
     }
   )
 )
+

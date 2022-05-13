@@ -41,7 +41,7 @@ SensorInstance <- R6::R6Class(
       SensorInstanceObject
     },
     fromJSON = function(SensorInstanceJson) {
-      SensorInstanceObject <- jsonlite::fromJSON(SensorInstanceJson)
+      SensorInstanceObject <- jsonlite::fromJSON(SensorInstanceJson, simplifyVector = FALSE)
       if (!is.null(SensorInstanceObject$`label`)) {
         self$`label` <- SensorInstanceObject$`label`
       }
@@ -60,9 +60,10 @@ SensorInstance <- R6::R6Class(
       )
     },
     fromJSONString = function(SensorInstanceJson) {
-      SensorInstanceObject <- jsonlite::fromJSON(SensorInstanceJson)
+      SensorInstanceObject <- jsonlite::fromJSON(SensorInstanceJson, simplifyVector = FALSE)
       self$`label` <- SensorInstanceObject$`label`
       self$`sensorId` <- SensorInstanceObject$`sensorId`
     }
   )
 )
+

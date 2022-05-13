@@ -50,7 +50,7 @@ GetSensorResponse <- R6::R6Class(
       GetSensorResponseObject
     },
     fromJSON = function(GetSensorResponseJson) {
-      GetSensorResponseObject <- jsonlite::fromJSON(GetSensorResponseJson)
+      GetSensorResponseObject <- jsonlite::fromJSON(GetSensorResponseJson, simplifyVector = FALSE)
       if (!is.null(GetSensorResponseObject$`label`)) {
         self$`label` <- GetSensorResponseObject$`label`
       }
@@ -76,7 +76,7 @@ GetSensorResponse <- R6::R6Class(
       )
     },
     fromJSONString = function(GetSensorResponseJson) {
-      GetSensorResponseObject <- jsonlite::fromJSON(GetSensorResponseJson)
+      GetSensorResponseObject <- jsonlite::fromJSON(GetSensorResponseJson, simplifyVector = FALSE)
       self$`label` <- GetSensorResponseObject$`label`
       self$`sensorId` <- GetSensorResponseObject$`sensorId`
       SensorUsageInfoObject <- SensorUsageInfo$new()
@@ -84,3 +84,4 @@ GetSensorResponse <- R6::R6Class(
     }
   )
 )
+

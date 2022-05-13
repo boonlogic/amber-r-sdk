@@ -41,7 +41,7 @@ Error <- R6::R6Class(
       ErrorObject
     },
     fromJSON = function(ErrorJson) {
-      ErrorObject <- jsonlite::fromJSON(ErrorJson)
+      ErrorObject <- jsonlite::fromJSON(ErrorJson, simplifyVector = FALSE)
       if (!is.null(ErrorObject$`code`)) {
         self$`code` <- ErrorObject$`code`
       }
@@ -60,9 +60,10 @@ Error <- R6::R6Class(
       )
     },
     fromJSONString = function(ErrorJson) {
-      ErrorObject <- jsonlite::fromJSON(ErrorJson)
+      ErrorObject <- jsonlite::fromJSON(ErrorJson, simplifyVector = FALSE)
       self$`code` <- ErrorObject$`code`
       self$`message` <- ErrorObject$`message`
     }
   )
 )
+

@@ -73,7 +73,7 @@ MTraining <- R6::R6Class(
       MTrainingObject
     },
     fromJSON = function(MTrainingJson) {
-      MTrainingObject <- jsonlite::fromJSON(MTrainingJson)
+      MTrainingObject <- jsonlite::fromJSON(MTrainingJson, simplifyVector = FALSE)
       if (!is.null(MTrainingObject$`VersionNumber`)) {
         self$`VersionNumber` <- lapply(MTrainingObject$`VersionNumber`, function(x) {
           VersionNumberObject <- VersionNumber$new()
@@ -111,7 +111,7 @@ MTraining <- R6::R6Class(
       )
     },
     fromJSONString = function(MTrainingJson) {
-      MTrainingObject <- jsonlite::fromJSON(MTrainingJson)
+      MTrainingObject <- jsonlite::fromJSON(MTrainingJson, simplifyVector = FALSE)
       self$`VersionNumber` <- lapply(MTrainingObject$`VersionNumber`, function(x) VersionNumber$new()$fromJSON(jsonlite::toJSON(x, auto_unbox = TRUE)))
       self$`m_GeometricPlotY` <- MTrainingObject$`m_GeometricPlotY`
       self$`m_GeometricPlotX` <- MTrainingObject$`m_GeometricPlotX`
@@ -120,3 +120,4 @@ MTraining <- R6::R6Class(
     }
   )
 )
+

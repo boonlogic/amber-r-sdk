@@ -41,7 +41,7 @@ PutStreamResponse <- R6::R6Class(
       PutStreamResponseObject
     },
     fromJSON = function(PutStreamResponseJson) {
-      PutStreamResponseObject <- jsonlite::fromJSON(PutStreamResponseJson)
+      PutStreamResponseObject <- jsonlite::fromJSON(PutStreamResponseJson, simplifyVector = FALSE)
       if (!is.null(PutStreamResponseObject$`vector`)) {
         self$`vector` <- PutStreamResponseObject$`vector`
       }
@@ -62,10 +62,11 @@ PutStreamResponse <- R6::R6Class(
       )
     },
     fromJSONString = function(PutStreamResponseJson) {
-      PutStreamResponseObject <- jsonlite::fromJSON(PutStreamResponseJson)
+      PutStreamResponseObject <- jsonlite::fromJSON(PutStreamResponseJson, simplifyVector = FALSE)
       self$`vector` <- PutStreamResponseObject$`vector`
       PostStreamResponseObject <- PostStreamResponse$new()
       self$`results` <- PostStreamResponseObject$fromJSON(jsonlite::toJSON(PutStreamResponseObject$results, auto_unbox = TRUE))
     }
   )
 )
+

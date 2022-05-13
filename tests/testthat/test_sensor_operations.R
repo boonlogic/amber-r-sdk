@@ -93,8 +93,8 @@ test_that("configure_sensor", {
                      "learningRateDenominator" = 10000,
                      "learningMaxClusters" = 1000,
                      "learningMaxSamples" = 1000000,
-                     "features" = list(list("minVal" = 0,
-                                            "maxVal" = 1,
+                     "features" = list(list("maxVal" = 1,
+                                            "minVal" = 0,
                                             "label" = "feature-0",
                                             "submitRule" = "submit")
                                        )
@@ -108,9 +108,7 @@ test_that("configure_sensor", {
                                      learning_rate_denominator = 10000,
                                      learning_max_clusters = 1000,
                                      learning_max_samples = 1000000)
-    # TODO: figure out bigDecimal return
-    # expect_mapequal(config, expected)
-    expect_true(TRUE)
+    expect_mapequal(config, expected)
 })
 
 test_that("configure_sensor_negative", {
@@ -131,9 +129,9 @@ test_that("get_config", {
                      "learningMaxClusters" = 1000,
                      "learningMaxSamples" = 1000000,
                      "percentVariation" = 0.05,
-                     "features" = list(list("minVal" = 0, "maxVal" = 1, "label" = "feature-0", "submitRule" = "submit")))
-    # TODO: test get config once bigdecimal is done
-    expect_true(TRUE)
+                     "features" = list(list("maxVal" = 1, "minVal" = 0, "label" = "feature-0", "submitRule" = "submit")))
+    config <- amber$get_config(sensor_id)
+    expect_mapequal(config, expected)
 })
 
 test_that("get_config_negative", {
@@ -301,7 +299,7 @@ test_that("pretrain_sensor", {
     data <- as.list(read.csv("output_current.csv"))
 
     expect_true(TRUE)
-    # TODO
+    # TODO empty response from server error
     # results <- amber$pretrain_sensor(sensor_id, data, block = TRUE)
     # expect_equal(results$state, "Pretrained")
 

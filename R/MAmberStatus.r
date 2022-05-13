@@ -104,7 +104,7 @@ MAmberStatus <- R6::R6Class(
       MAmberStatusObject
     },
     fromJSON = function(MAmberStatusJson) {
-      MAmberStatusObject <- jsonlite::fromJSON(MAmberStatusJson)
+      MAmberStatusObject <- jsonlite::fromJSON(MAmberStatusJson, simplifyVector = FALSE)
       if (!is.null(MAmberStatusObject$`VersionNumber`)) {
         VersionNumberObject <- VersionNumber$new()
         VersionNumberObject$fromJSON(jsonlite::toJSON(MAmberStatusObject$VersionNumber, auto_unbox = TRUE))
@@ -160,7 +160,7 @@ MAmberStatus <- R6::R6Class(
       )
     },
     fromJSONString = function(MAmberStatusJson) {
-      MAmberStatusObject <- jsonlite::fromJSON(MAmberStatusJson)
+      MAmberStatusObject <- jsonlite::fromJSON(MAmberStatusJson, simplifyVector = FALSE)
       VersionNumberObject <- VersionNumber$new()
       self$`VersionNumber` <- VersionNumberObject$fromJSON(jsonlite::toJSON(MAmberStatusObject$VersionNumber, auto_unbox = TRUE))
       self$`m_Status` <- MAmberStatusObject$`m_Status`
@@ -174,3 +174,4 @@ MAmberStatus <- R6::R6Class(
     }
   )
 )
+

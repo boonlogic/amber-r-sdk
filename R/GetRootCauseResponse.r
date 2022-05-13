@@ -32,7 +32,8 @@ GetRootCauseResponse <- R6::R6Class(
       )
     },
     fromJSONString = function(GetRootCauseResponseJson) {
-      GetRootCauseResponseObject <- jsonlite::fromJSON(GetRootCauseResponseJson)
+      GetRootCauseResponseObject <- jsonlite::fromJSON(GetRootCauseResponseJson, simplifyVector = FALSE)
     }
   )
 )
+

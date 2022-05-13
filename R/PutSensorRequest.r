@@ -32,7 +32,7 @@ PutSensorRequest <- R6::R6Class(
       PutSensorRequestObject
     },
     fromJSON = function(PutSensorRequestJson) {
-      PutSensorRequestObject <- jsonlite::fromJSON(PutSensorRequestJson)
+      PutSensorRequestObject <- jsonlite::fromJSON(PutSensorRequestJson, simplifyVector = FALSE)
       if (!is.null(PutSensorRequestObject$`label`)) {
         self$`label` <- PutSensorRequestObject$`label`
       }
@@ -46,8 +46,9 @@ PutSensorRequest <- R6::R6Class(
       )
     },
     fromJSONString = function(PutSensorRequestJson) {
-      PutSensorRequestObject <- jsonlite::fromJSON(PutSensorRequestJson)
+      PutSensorRequestObject <- jsonlite::fromJSON(PutSensorRequestJson, simplifyVector = FALSE)
       self$`label` <- PutSensorRequestObject$`label`
     }
   )
 )
+

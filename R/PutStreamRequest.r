@@ -42,7 +42,7 @@ PutStreamRequest <- R6::R6Class(
       PutStreamRequestObject
     },
     fromJSON = function(PutStreamRequestJson) {
-      PutStreamRequestObject <- jsonlite::fromJSON(PutStreamRequestJson)
+      PutStreamRequestObject <- jsonlite::fromJSON(PutStreamRequestJson, simplifyVector = FALSE)
       if (!is.null(PutStreamRequestObject$`vector`)) {
         self$`vector` <- lapply(PutStreamRequestObject$`vector`, function(x) {
           vectorObject <- PutStreamFeature$new()
@@ -65,9 +65,10 @@ PutStreamRequest <- R6::R6Class(
       )
     },
     fromJSONString = function(PutStreamRequestJson) {
-      PutStreamRequestObject <- jsonlite::fromJSON(PutStreamRequestJson)
+      PutStreamRequestObject <- jsonlite::fromJSON(PutStreamRequestJson, simplifyVector = FALSE)
       self$`vector` <- lapply(PutStreamRequestObject$`vector`, function(x) PutStreamFeature$new()$fromJSON(jsonlite::toJSON(x, auto_unbox = TRUE)))
       self$`submitRule` <- PutStreamRequestObject$`submitRule`
     }
   )
 )
+

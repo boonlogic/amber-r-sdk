@@ -42,7 +42,7 @@ PutConfigRequest <- R6::R6Class(
       PutConfigRequestObject
     },
     fromJSON = function(PutConfigRequestJson) {
-      PutConfigRequestObject <- jsonlite::fromJSON(PutConfigRequestJson)
+      PutConfigRequestObject <- jsonlite::fromJSON(PutConfigRequestJson, simplifyVector = FALSE)
       if (!is.null(PutConfigRequestObject$`features`)) {
         self$`features` <- lapply(PutConfigRequestObject$`features`, function(x) {
           featuresObject <- FusionConfig$new()
@@ -67,10 +67,11 @@ PutConfigRequest <- R6::R6Class(
       )
     },
     fromJSONString = function(PutConfigRequestJson) {
-      PutConfigRequestObject <- jsonlite::fromJSON(PutConfigRequestJson)
+      PutConfigRequestObject <- jsonlite::fromJSON(PutConfigRequestJson, simplifyVector = FALSE)
       self$`features` <- lapply(PutConfigRequestObject$`features`, function(x) FusionConfig$new()$fromJSON(jsonlite::toJSON(x, auto_unbox = TRUE)))
       StreamingParametersObject <- StreamingParameters$new()
       self$`streaming` <- StreamingParametersObject$fromJSON(jsonlite::toJSON(PutConfigRequestObject$streaming, auto_unbox = TRUE))
     }
   )
 )
+

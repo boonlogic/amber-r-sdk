@@ -23,7 +23,7 @@ GetSensorsResponse <- R6::R6Class(
       GetSensorsResponseObject
     },
     fromJSON = function(GetSensorsResponseJson) {
-      GetSensorsResponseObject <- jsonlite::fromJSON(GetSensorsResponseJson)
+      GetSensorsResponseObject <- jsonlite::fromJSON(GetSensorsResponseJson, simplifyVector = FALSE)
     },
     toJSONString = function() {
        sprintf(
@@ -32,7 +32,8 @@ GetSensorsResponse <- R6::R6Class(
       )
     },
     fromJSONString = function(GetSensorsResponseJson) {
-      GetSensorsResponseObject <- jsonlite::fromJSON(GetSensorsResponseJson)
+      GetSensorsResponseObject <- jsonlite::fromJSON(GetSensorsResponseJson, simplifyVector = FALSE)
     }
   )
 )
+

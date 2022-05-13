@@ -68,7 +68,7 @@ FeatureConfig <- R6::R6Class(
       FeatureConfigObject
     },
     fromJSON = function(FeatureConfigJson) {
-      FeatureConfigObject <- jsonlite::fromJSON(FeatureConfigJson)
+      FeatureConfigObject <- jsonlite::fromJSON(FeatureConfigJson, simplifyVector = FALSE)
       if (!is.null(FeatureConfigObject$`maxVal`)) {
         self$`maxVal` <- FeatureConfigObject$`maxVal`
       }
@@ -102,7 +102,7 @@ FeatureConfig <- R6::R6Class(
       )
     },
     fromJSONString = function(FeatureConfigJson) {
-      FeatureConfigObject <- jsonlite::fromJSON(FeatureConfigJson)
+      FeatureConfigObject <- jsonlite::fromJSON(FeatureConfigJson, simplifyVector = FALSE)
       self$`maxVal` <- FeatureConfigObject$`maxVal`
       self$`minVal` <- FeatureConfigObject$`minVal`
       self$`weight` <- FeatureConfigObject$`weight`
@@ -111,3 +111,4 @@ FeatureConfig <- R6::R6Class(
     }
   )
 )
+

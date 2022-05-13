@@ -73,25 +73,25 @@ StreamStatus <- R6::R6Class(
         StreamStatusObject[['message']] <- self$`message`
       }
       if (!is.null(self$`progress`)) {
-        StreamStatusObject[['progress']] <- self$`progress`$toJSON()
+        StreamStatusObject[['progress']] <- self$`progress`
       }
       if (!is.null(self$`clusterCount`)) {
-        StreamStatusObject[['clusterCount']] <- self$`clusterCount`$toJSON()
+        StreamStatusObject[['clusterCount']] <- self$`clusterCount`
       }
       if (!is.null(self$`retryCount`)) {
-        StreamStatusObject[['retryCount']] <- self$`retryCount`$toJSON()
+        StreamStatusObject[['retryCount']] <- self$`retryCount`
       }
       if (!is.null(self$`streamingWindowSize`)) {
-        StreamStatusObject[['streamingWindowSize']] <- self$`streamingWindowSize`$toJSON()
+        StreamStatusObject[['streamingWindowSize']] <- self$`streamingWindowSize`
       }
       if (!is.null(self$`totalInferences`)) {
-        StreamStatusObject[['totalInferences']] <- self$`totalInferences`$toJSON()
+        StreamStatusObject[['totalInferences']] <- self$`totalInferences`
       }
 
       StreamStatusObject
     },
     fromJSON = function(StreamStatusJson) {
-      StreamStatusObject <- jsonlite::fromJSON(StreamStatusJson)
+      StreamStatusObject <- jsonlite::fromJSON(StreamStatusJson, simplifyVector = FALSE)
       if (!is.null(StreamStatusObject$`state`)) {
         self$`state` <- StreamStatusObject$`state`
       }
@@ -99,29 +99,19 @@ StreamStatus <- R6::R6Class(
         self$`message` <- StreamStatusObject$`message`
       }
       if (!is.null(StreamStatusObject$`progress`)) {
-        progressObject <- BigDecimal$new()
-        progressObject$fromJSON(jsonlite::toJSON(StreamStatusObject$progress, auto_unbox = TRUE))
-        self$`progress` <- progressObject
+        self$`progress` <- StreamStatusObject$progress
       }
       if (!is.null(StreamStatusObject$`clusterCount`)) {
-        clusterCountObject <- BigDecimal$new()
-        clusterCountObject$fromJSON(jsonlite::toJSON(StreamStatusObject$clusterCount, auto_unbox = TRUE))
-        self$`clusterCount` <- clusterCountObject
+        self$`clusterCount` <- StreamStatusObject$clusterCount
       }
       if (!is.null(StreamStatusObject$`retryCount`)) {
-        retryCountObject <- BigDecimal$new()
-        retryCountObject$fromJSON(jsonlite::toJSON(StreamStatusObject$retryCount, auto_unbox = TRUE))
-        self$`retryCount` <- retryCountObject
+        self$`retryCount` <- StreamStatusObject$retryCount
       }
       if (!is.null(StreamStatusObject$`streamingWindowSize`)) {
-        streamingWindowSizeObject <- BigDecimal$new()
-        streamingWindowSizeObject$fromJSON(jsonlite::toJSON(StreamStatusObject$streamingWindowSize, auto_unbox = TRUE))
-        self$`streamingWindowSize` <- streamingWindowSizeObject
+        self$`streamingWindowSize` <- StreamStatusObject$streamingWindowSize
       }
       if (!is.null(StreamStatusObject$`totalInferences`)) {
-        totalInferencesObject <- BigDecimal$new()
-        totalInferencesObject$fromJSON(jsonlite::toJSON(StreamStatusObject$totalInferences, auto_unbox = TRUE))
-        self$`totalInferences` <- totalInferencesObject
+        self$`totalInferences` <- StreamStatusObject$totalInferences
       }
     },
     toJSONString = function() {
@@ -137,27 +127,23 @@ StreamStatus <- R6::R6Class(
         }',
         self$`state`,
         self$`message`,
-        self$`progress`$toJSON(),
-        self$`clusterCount`$toJSON(),
-        self$`retryCount`$toJSON(),
-        self$`streamingWindowSize`$toJSON(),
-        self$`totalInferences`$toJSON()
+        self$`progress`,
+        self$`clusterCount`,
+        self$`retryCount`,
+        self$`streamingWindowSize`,
+        self$`totalInferences`
       )
     },
     fromJSONString = function(StreamStatusJson) {
-      StreamStatusObject <- jsonlite::fromJSON(StreamStatusJson)
+      StreamStatusObject <- jsonlite::fromJSON(StreamStatusJson, simplifyVector = FALSE)
       self$`state` <- StreamStatusObject$`state`
       self$`message` <- StreamStatusObject$`message`
-      BigDecimalObject <- BigDecimal$new()
-      self$`progress` <- BigDecimalObject$fromJSON(jsonlite::toJSON(StreamStatusObject$progress, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`clusterCount` <- BigDecimalObject$fromJSON(jsonlite::toJSON(StreamStatusObject$clusterCount, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`retryCount` <- BigDecimalObject$fromJSON(jsonlite::toJSON(StreamStatusObject$retryCount, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`streamingWindowSize` <- BigDecimalObject$fromJSON(jsonlite::toJSON(StreamStatusObject$streamingWindowSize, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`totalInferences` <- BigDecimalObject$fromJSON(jsonlite::toJSON(StreamStatusObject$totalInferences, auto_unbox = TRUE))
+      self$`progress` <- StreamStatusObject$progress
+      self$`clusterCount` <- StreamStatusObject$clusterCount
+      self$`retryCount` <- StreamStatusObject$retryCount
+      self$`streamingWindowSize` <- StreamStatusObject$streamingWindowSize
+      self$`totalInferences` <- StreamStatusObject$totalInferences
     }
   )
 )
+

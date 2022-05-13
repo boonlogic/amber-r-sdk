@@ -86,7 +86,7 @@ Version <- R6::R6Class(
       VersionObject
     },
     fromJSON = function(VersionJson) {
-      VersionObject <- jsonlite::fromJSON(VersionJson)
+      VersionObject <- jsonlite::fromJSON(VersionJson, simplifyVector = FALSE)
       if (!is.null(VersionObject$`release`)) {
         self$`release` <- VersionObject$`release`
       }
@@ -130,7 +130,7 @@ Version <- R6::R6Class(
       )
     },
     fromJSONString = function(VersionJson) {
-      VersionObject <- jsonlite::fromJSON(VersionJson)
+      VersionObject <- jsonlite::fromJSON(VersionJson, simplifyVector = FALSE)
       self$`release` <- VersionObject$`release`
       self$`api-version` <- VersionObject$`api-version`
       self$`builder` <- VersionObject$`builder`
@@ -141,3 +141,4 @@ Version <- R6::R6Class(
     }
   )
 )
+

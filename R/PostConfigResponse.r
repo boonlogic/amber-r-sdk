@@ -81,19 +81,19 @@ PostConfigResponse <- R6::R6Class(
     toJSON = function() {
       PostConfigResponseObject <- list()
       if (!is.null(self$`anomalyHistoryWindow`)) {
-        PostConfigResponseObject[['anomalyHistoryWindow']] <- self$`anomalyHistoryWindow`$toJSON()
+        PostConfigResponseObject[['anomalyHistoryWindow']] <- self$`anomalyHistoryWindow`
       }
       if (!is.null(self$`learningRateNumerator`)) {
-        PostConfigResponseObject[['learningRateNumerator']] <- self$`learningRateNumerator`$toJSON()
+        PostConfigResponseObject[['learningRateNumerator']] <- self$`learningRateNumerator`
       }
       if (!is.null(self$`learningRateDenominator`)) {
-        PostConfigResponseObject[['learningRateDenominator']] <- self$`learningRateDenominator`$toJSON()
+        PostConfigResponseObject[['learningRateDenominator']] <- self$`learningRateDenominator`
       }
       if (!is.null(self$`learningMaxClusters`)) {
-        PostConfigResponseObject[['learningMaxClusters']] <- self$`learningMaxClusters`$toJSON()
+        PostConfigResponseObject[['learningMaxClusters']] <- self$`learningMaxClusters`
       }
       if (!is.null(self$`learningMaxSamples`)) {
-        PostConfigResponseObject[['learningMaxSamples']] <- self$`learningMaxSamples`$toJSON()
+        PostConfigResponseObject[['learningMaxSamples']] <- self$`learningMaxSamples`
       }
       if (!is.null(self$`featureCount`)) {
         PostConfigResponseObject[['featureCount']] <- self$`featureCount`
@@ -105,7 +105,7 @@ PostConfigResponse <- R6::R6Class(
         PostConfigResponseObject[['features']] <- lapply(self$`features`, function(x) x$toJSON())
       }
       if (!is.null(self$`samplesToBuffer`)) {
-        PostConfigResponseObject[['samplesToBuffer']] <- self$`samplesToBuffer`$toJSON()
+        PostConfigResponseObject[['samplesToBuffer']] <- self$`samplesToBuffer`
       }
 
       PostConfigResponseObject
@@ -113,29 +113,19 @@ PostConfigResponse <- R6::R6Class(
     fromJSON = function(PostConfigResponseJson) {
       PostConfigResponseObject <- jsonlite::fromJSON(PostConfigResponseJson, simplifyVector = FALSE)
       if (!is.null(PostConfigResponseObject$`anomalyHistoryWindow`)) {
-        anomalyHistoryWindowObject <- BigDecimal$new()
-        anomalyHistoryWindowObject$fromJSON(jsonlite::toJSON(PostConfigResponseObject$anomalyHistoryWindow, auto_unbox = TRUE))
-        self$`anomalyHistoryWindow` <- anomalyHistoryWindowObject
+        self$`anomalyHistoryWindow` <- PostConfigResponseObject$anomalyHistoryWindow
       }
       if (!is.null(PostConfigResponseObject$`learningRateNumerator`)) {
-        learningRateNumeratorObject <- BigDecimal$new()
-        learningRateNumeratorObject$fromJSON(jsonlite::toJSON(PostConfigResponseObject$learningRateNumerator, auto_unbox = TRUE))
-        self$`learningRateNumerator` <- learningRateNumeratorObject
+        self$`learningRateNumerator` <- PostConfigResponseObject$learningRateNumerator
       }
       if (!is.null(PostConfigResponseObject$`learningRateDenominator`)) {
-        learningRateDenominatorObject <- BigDecimal$new()
-        learningRateDenominatorObject$fromJSON(jsonlite::toJSON(PostConfigResponseObject$learningRateDenominator, auto_unbox = TRUE))
-        self$`learningRateDenominator` <- learningRateDenominatorObject
+        self$`learningRateDenominator` <- PostConfigResponseObject$learningRateDenominator
       }
       if (!is.null(PostConfigResponseObject$`learningMaxClusters`)) {
-        learningMaxClustersObject <- BigDecimal$new()
-        learningMaxClustersObject$fromJSON(jsonlite::toJSON(PostConfigResponseObject$learningMaxClusters, auto_unbox = TRUE))
-        self$`learningMaxClusters` <- learningMaxClustersObject
+        self$`learningMaxClusters` <- PostConfigResponseObject$learningMaxClusters
       }
       if (!is.null(PostConfigResponseObject$`learningMaxSamples`)) {
-        learningMaxSamplesObject <- BigDecimal$new()
-        learningMaxSamplesObject$fromJSON(jsonlite::toJSON(PostConfigResponseObject$learningMaxSamples, auto_unbox = TRUE))
-        self$`learningMaxSamples` <- learningMaxSamplesObject
+        self$`learningMaxSamples` <- PostConfigResponseObject$learningMaxSamples
       }
       if (!is.null(PostConfigResponseObject$`featureCount`)) {
         self$`featureCount` <- PostConfigResponseObject$`featureCount`
@@ -151,9 +141,7 @@ PostConfigResponse <- R6::R6Class(
         })
       }
       if (!is.null(PostConfigResponseObject$`samplesToBuffer`)) {
-        samplesToBufferObject <- BigDecimal$new()
-        samplesToBufferObject$fromJSON(jsonlite::toJSON(PostConfigResponseObject$samplesToBuffer, auto_unbox = TRUE))
-        self$`samplesToBuffer` <- samplesToBufferObject
+        self$`samplesToBuffer` <- PostConfigResponseObject$samplesToBuffer
       }
     },
     toJSONString = function() {
@@ -169,34 +157,29 @@ PostConfigResponse <- R6::R6Class(
            "features": [%s],
            "samplesToBuffer": %s
         }',
-        self$`anomalyHistoryWindow`$toJSON(),
-        self$`learningRateNumerator`$toJSON(),
-        self$`learningRateDenominator`$toJSON(),
-        self$`learningMaxClusters`$toJSON(),
-        self$`learningMaxSamples`$toJSON(),
+        self$`anomalyHistoryWindow`,
+        self$`learningRateNumerator`,
+        self$`learningRateDenominator`,
+        self$`learningMaxClusters`,
+        self$`learningMaxSamples`,
         self$`featureCount`,
         self$`streamingWindowSize`,
         lapply(self$`features`, function(x) paste(x$toJSON(), sep=",")),
-        self$`samplesToBuffer`$toJSON()
+        self$`samplesToBuffer`
       )
     },
     fromJSONString = function(PostConfigResponseJson) {
-      PostConfigResponseObject <- jsonlite::fromJSON(PostConfigResponseJson)
-      BigDecimalObject <- BigDecimal$new()
-      self$`anomalyHistoryWindow` <- BigDecimalObject$fromJSON(jsonlite::toJSON(PostConfigResponseObject$anomalyHistoryWindow, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`learningRateNumerator` <- BigDecimalObject$fromJSON(jsonlite::toJSON(PostConfigResponseObject$learningRateNumerator, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`learningRateDenominator` <- BigDecimalObject$fromJSON(jsonlite::toJSON(PostConfigResponseObject$learningRateDenominator, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`learningMaxClusters` <- BigDecimalObject$fromJSON(jsonlite::toJSON(PostConfigResponseObject$learningMaxClusters, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`learningMaxSamples` <- BigDecimalObject$fromJSON(jsonlite::toJSON(PostConfigResponseObject$learningMaxSamples, auto_unbox = TRUE))
+      PostConfigResponseObject <- jsonlite::fromJSON(PostConfigResponseJson, simplifyVector = FALSE)
+      self$`anomalyHistoryWindow` <- PostConfigResponseObject$anomalyHistoryWindow
+      self$`learningRateNumerator` <- PostConfigResponseObject$learningRateNumerator
+      self$`learningRateDenominator` <- PostConfigResponseObject$learningRateDenominator
+      self$`learningMaxClusters` <- PostConfigResponseObject$learningMaxClusters
+      self$`learningMaxSamples` <- PostConfigResponseObject$learningMaxSamples
       self$`featureCount` <- PostConfigResponseObject$`featureCount`
       self$`streamingWindowSize` <- PostConfigResponseObject$`streamingWindowSize`
       self$`features` <- lapply(PostConfigResponseObject$`features`, function(x) FeatureConfig$new()$fromJSON(jsonlite::toJSON(x, auto_unbox = TRUE)))
-      BigDecimalObject <- BigDecimal$new()
-      self$`samplesToBuffer` <- BigDecimalObject$fromJSON(jsonlite::toJSON(PostConfigResponseObject$samplesToBuffer, auto_unbox = TRUE))
+      self$`samplesToBuffer` <- PostConfigResponseObject$samplesToBuffer
     }
   )
 )
+

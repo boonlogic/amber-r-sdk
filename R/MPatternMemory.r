@@ -32,7 +32,7 @@ MPatternMemory <- R6::R6Class(
       MPatternMemoryObject
     },
     fromJSON = function(MPatternMemoryJson) {
-      MPatternMemoryObject <- jsonlite::fromJSON(MPatternMemoryJson)
+      MPatternMemoryObject <- jsonlite::fromJSON(MPatternMemoryJson, simplifyVector = FALSE)
       if (!is.null(MPatternMemoryObject$`VersionNumber`)) {
         VersionNumberObject <- VersionNumber$new()
         VersionNumberObject$fromJSON(jsonlite::toJSON(MPatternMemoryObject$VersionNumber, auto_unbox = TRUE))
@@ -48,9 +48,10 @@ MPatternMemory <- R6::R6Class(
       )
     },
     fromJSONString = function(MPatternMemoryJson) {
-      MPatternMemoryObject <- jsonlite::fromJSON(MPatternMemoryJson)
+      MPatternMemoryObject <- jsonlite::fromJSON(MPatternMemoryJson, simplifyVector = FALSE)
       VersionNumberObject <- VersionNumber$new()
       self$`VersionNumber` <- VersionNumberObject$fromJSON(jsonlite::toJSON(MPatternMemoryObject$VersionNumber, auto_unbox = TRUE))
     }
   )
 )
+

@@ -78,7 +78,7 @@ MNanoConfig <- R6::R6Class(
       MNanoConfigObject
     },
     fromJSON = function(MNanoConfigJson) {
-      MNanoConfigObject <- jsonlite::fromJSON(MNanoConfigJson)
+      MNanoConfigObject <- jsonlite::fromJSON(MNanoConfigJson, simplifyVector = FALSE)
       if (!is.null(MNanoConfigObject$`VersionNumber`)) {
         VersionNumberObject <- VersionNumber$new()
         VersionNumberObject$fromJSON(jsonlite::toJSON(MNanoConfigObject$VersionNumber, auto_unbox = TRUE))
@@ -123,7 +123,7 @@ MNanoConfig <- R6::R6Class(
       )
     },
     fromJSONString = function(MNanoConfigJson) {
-      MNanoConfigObject <- jsonlite::fromJSON(MNanoConfigJson)
+      MNanoConfigObject <- jsonlite::fromJSON(MNanoConfigJson, simplifyVector = FALSE)
       VersionNumberObject <- VersionNumber$new()
       self$`VersionNumber` <- VersionNumberObject$fromJSON(jsonlite::toJSON(MNanoConfigObject$VersionNumber, auto_unbox = TRUE))
       self$`m_NumericFormat` <- MNanoConfigObject$`m_NumericFormat`
@@ -134,3 +134,4 @@ MNanoConfig <- R6::R6Class(
     }
   )
 )
+

@@ -14,7 +14,8 @@ packages <- list("httr",
 				 "jsonlite",
 				 "iterators",
 				 "rjson",
-				 "gms")
+				 "gms",
+				 "tidyverse")
 
 for (package in packages) {
 	if (!(package %in% installed.packages())) {

@@ -113,7 +113,7 @@ SensorUsageInfo <- R6::R6Class(
       SensorUsageInfoObject
     },
     fromJSON = function(SensorUsageInfoJson) {
-      SensorUsageInfoObject <- jsonlite::fromJSON(SensorUsageInfoJson)
+      SensorUsageInfoObject <- jsonlite::fromJSON(SensorUsageInfoJson, simplifyVector = FALSE)
       if (!is.null(SensorUsageInfoObject$`postConfig`)) {
         postConfigObject <- EndpointUsageInfo$new()
         postConfigObject$fromJSON(jsonlite::toJSON(SensorUsageInfoObject$postConfig, auto_unbox = TRUE))
@@ -192,7 +192,7 @@ SensorUsageInfo <- R6::R6Class(
       )
     },
     fromJSONString = function(SensorUsageInfoJson) {
-      SensorUsageInfoObject <- jsonlite::fromJSON(SensorUsageInfoJson)
+      SensorUsageInfoObject <- jsonlite::fromJSON(SensorUsageInfoJson, simplifyVector = FALSE)
       EndpointUsageInfoObject <- EndpointUsageInfo$new()
       self$`postConfig` <- EndpointUsageInfoObject$fromJSON(jsonlite::toJSON(SensorUsageInfoObject$postConfig, auto_unbox = TRUE))
       StreamingEndpointUsageInfoObject <- StreamingEndpointUsageInfo$new()
@@ -216,3 +216,4 @@ SensorUsageInfo <- R6::R6Class(
     }
   )
 )
+

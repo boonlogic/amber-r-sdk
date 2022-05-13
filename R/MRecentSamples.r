@@ -42,7 +42,7 @@ MRecentSamples <- R6::R6Class(
       MRecentSamplesObject
     },
     fromJSON = function(MRecentSamplesJson) {
-      MRecentSamplesObject <- jsonlite::fromJSON(MRecentSamplesJson)
+      MRecentSamplesObject <- jsonlite::fromJSON(MRecentSamplesJson, simplifyVector = FALSE)
       if (!is.null(MRecentSamplesObject$`VersionNumber`)) {
         VersionNumberObject <- VersionNumber$new()
         VersionNumberObject$fromJSON(jsonlite::toJSON(MRecentSamplesObject$VersionNumber, auto_unbox = TRUE))
@@ -67,10 +67,11 @@ MRecentSamples <- R6::R6Class(
       )
     },
     fromJSONString = function(MRecentSamplesJson) {
-      MRecentSamplesObject <- jsonlite::fromJSON(MRecentSamplesJson)
+      MRecentSamplesObject <- jsonlite::fromJSON(MRecentSamplesJson, simplifyVector = FALSE)
       VersionNumberObject <- VersionNumber$new()
       self$`VersionNumber` <- VersionNumberObject$fromJSON(jsonlite::toJSON(MRecentSamplesObject$VersionNumber, auto_unbox = TRUE))
       self$`m_Values` <- lapply(MRecentSamplesObject$`m_Values`, function(x) Numeric$new()$fromJSON(jsonlite::toJSON(x, auto_unbox = TRUE)))
     }
   )
 )
+

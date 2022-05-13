@@ -23,7 +23,7 @@ MagicNumber <- R6::R6Class(
       MagicNumberObject
     },
     fromJSON = function(MagicNumberJson) {
-      MagicNumberObject <- jsonlite::fromJSON(MagicNumberJson)
+      MagicNumberObject <- jsonlite::fromJSON(MagicNumberJson, simplifyVector = FALSE)
     },
     toJSONString = function() {
        sprintf(
@@ -32,7 +32,8 @@ MagicNumber <- R6::R6Class(
       )
     },
     fromJSONString = function(MagicNumberJson) {
-      MagicNumberObject <- jsonlite::fromJSON(MagicNumberJson)
+      MagicNumberObject <- jsonlite::fromJSON(MagicNumberJson, simplifyVector = FALSE)
     }
   )
 )
+

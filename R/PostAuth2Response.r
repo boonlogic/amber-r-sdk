@@ -59,7 +59,7 @@ PostAuth2Response <- R6::R6Class(
       PostAuth2ResponseObject
     },
     fromJSON = function(PostAuth2ResponseJson) {
-      PostAuth2ResponseObject <- jsonlite::fromJSON(PostAuth2ResponseJson)
+      PostAuth2ResponseObject <- jsonlite::fromJSON(PostAuth2ResponseJson, simplifyVector = FALSE)
       if (!is.null(PostAuth2ResponseObject$`idToken`)) {
         self$`idToken` <- PostAuth2ResponseObject$`idToken`
       }
@@ -88,7 +88,7 @@ PostAuth2Response <- R6::R6Class(
       )
     },
     fromJSONString = function(PostAuth2ResponseJson) {
-      PostAuth2ResponseObject <- jsonlite::fromJSON(PostAuth2ResponseJson)
+      PostAuth2ResponseObject <- jsonlite::fromJSON(PostAuth2ResponseJson, simplifyVector = FALSE)
       self$`idToken` <- PostAuth2ResponseObject$`idToken`
       self$`refreshToken` <- PostAuth2ResponseObject$`refreshToken`
       self$`expiresIn` <- PostAuth2ResponseObject$`expiresIn`
@@ -96,3 +96,4 @@ PostAuth2Response <- R6::R6Class(
     }
   )
 )
+

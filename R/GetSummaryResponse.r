@@ -313,7 +313,7 @@ GetSummaryResponse <- R6::R6Class(
       GetSummaryResponseObject
     },
     fromJSON = function(GetSummaryResponseJson) {
-      GetSummaryResponseObject <- jsonlite::fromJSON(GetSummaryResponseJson)
+      GetSummaryResponseObject <- jsonlite::fromJSON(GetSummaryResponseJson, simplifyVector = FALSE)
       if (!is.null(GetSummaryResponseObject$`MagicNumber`)) {
         MagicNumberObject <- MagicNumber$new()
         MagicNumberObject$fromJSON(jsonlite::toJSON(GetSummaryResponseObject$MagicNumber, auto_unbox = TRUE))
@@ -520,7 +520,7 @@ GetSummaryResponse <- R6::R6Class(
       )
     },
     fromJSONString = function(GetSummaryResponseJson) {
-      GetSummaryResponseObject <- jsonlite::fromJSON(GetSummaryResponseJson)
+      GetSummaryResponseObject <- jsonlite::fromJSON(GetSummaryResponseJson, simplifyVector = FALSE)
       MagicNumberObject <- MagicNumber$new()
       self$`MagicNumber` <- MagicNumberObject$fromJSON(jsonlite::toJSON(GetSummaryResponseObject$MagicNumber, auto_unbox = TRUE))
       VersionNumberObject <- VersionNumber$new()
@@ -575,3 +575,4 @@ GetSummaryResponse <- R6::R6Class(
     }
   )
 )
+

@@ -75,7 +75,7 @@ MNanoBackend <- R6::R6Class(
       MNanoBackendObject
     },
     fromJSON = function(MNanoBackendJson) {
-      MNanoBackendObject <- jsonlite::fromJSON(MNanoBackendJson)
+      MNanoBackendObject <- jsonlite::fromJSON(MNanoBackendJson, simplifyVector = FALSE)
       if (!is.null(MNanoBackendObject$`VersionNumber`)) {
         VersionNumberObject <- VersionNumber$new()
         VersionNumberObject$fromJSON(jsonlite::toJSON(MNanoBackendObject$VersionNumber, auto_unbox = TRUE))
@@ -118,7 +118,7 @@ MNanoBackend <- R6::R6Class(
       )
     },
     fromJSONString = function(MNanoBackendJson) {
-      MNanoBackendObject <- jsonlite::fromJSON(MNanoBackendJson)
+      MNanoBackendObject <- jsonlite::fromJSON(MNanoBackendJson, simplifyVector = FALSE)
       VersionNumberObject <- VersionNumber$new()
       self$`VersionNumber` <- VersionNumberObject$fromJSON(jsonlite::toJSON(MNanoBackendObject$VersionNumber, auto_unbox = TRUE))
       MPatternMemoryObject <- MPatternMemory$new()
@@ -130,3 +130,4 @@ MNanoBackend <- R6::R6Class(
     }
   )
 )
+

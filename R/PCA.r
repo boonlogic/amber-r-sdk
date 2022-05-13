@@ -23,7 +23,7 @@ PCA <- R6::R6Class(
       PCAObject
     },
     fromJSON = function(PCAJson) {
-      PCAObject <- jsonlite::fromJSON(PCAJson)
+      PCAObject <- jsonlite::fromJSON(PCAJson, simplifyVector = FALSE)
     },
     toJSONString = function() {
        sprintf(
@@ -32,7 +32,8 @@ PCA <- R6::R6Class(
       )
     },
     fromJSONString = function(PCAJson) {
-      PCAObject <- jsonlite::fromJSON(PCAJson)
+      PCAObject <- jsonlite::fromJSON(PCAJson, simplifyVector = FALSE)
     }
   )
 )
+

@@ -85,7 +85,7 @@ MStreamingParameters <- R6::R6Class(
       MStreamingParametersObject
     },
     fromJSON = function(MStreamingParametersJson) {
-      MStreamingParametersObject <- jsonlite::fromJSON(MStreamingParametersJson)
+      MStreamingParametersObject <- jsonlite::fromJSON(MStreamingParametersJson, simplifyVector = FALSE)
       if (!is.null(MStreamingParametersObject$`VersionNumber`)) {
         VersionNumberObject <- VersionNumber$new()
         VersionNumberObject$fromJSON(jsonlite::toJSON(MStreamingParametersObject$VersionNumber, auto_unbox = TRUE))
@@ -131,7 +131,7 @@ MStreamingParameters <- R6::R6Class(
       )
     },
     fromJSONString = function(MStreamingParametersJson) {
-      MStreamingParametersObject <- jsonlite::fromJSON(MStreamingParametersJson)
+      MStreamingParametersObject <- jsonlite::fromJSON(MStreamingParametersJson, simplifyVector = FALSE)
       VersionNumberObject <- VersionNumber$new()
       self$`VersionNumber` <- VersionNumberObject$fromJSON(jsonlite::toJSON(MStreamingParametersObject$VersionNumber, auto_unbox = TRUE))
       self$`m_EnableAutotuning` <- MStreamingParametersObject$`m_EnableAutotuning`
@@ -143,3 +143,4 @@ MStreamingParameters <- R6::R6Class(
     }
   )
 )
+

@@ -82,28 +82,28 @@ GetStatusResponse <- R6::R6Class(
     toJSON = function() {
       GetStatusResponseObject <- list()
       if (!is.null(self$`pca`)) {
-        GetStatusResponseObject[['pca']] <- self$`pca`$toJSON()
+        GetStatusResponseObject[['pca']] <- self$`pca`
       }
       if (!is.null(self$`clusterGrowth`)) {
-        GetStatusResponseObject[['clusterGrowth']] <- self$`clusterGrowth`$toJSON()
+        GetStatusResponseObject[['clusterGrowth']] <- self$`clusterGrowth`
       }
       if (!is.null(self$`clusterSizes`)) {
-        GetStatusResponseObject[['clusterSizes']] <- self$`clusterSizes`$toJSON()
+        GetStatusResponseObject[['clusterSizes']] <- self$`clusterSizes`
       }
       if (!is.null(self$`anomalyIndexes`)) {
-        GetStatusResponseObject[['anomalyIndexes']] <- self$`anomalyIndexes`$toJSON()
+        GetStatusResponseObject[['anomalyIndexes']] <- self$`anomalyIndexes`
       }
       if (!is.null(self$`frequencyIndexes`)) {
-        GetStatusResponseObject[['frequencyIndexes']] <- self$`frequencyIndexes`$toJSON()
+        GetStatusResponseObject[['frequencyIndexes']] <- self$`frequencyIndexes`
       }
       if (!is.null(self$`distanceIndexes`)) {
-        GetStatusResponseObject[['distanceIndexes']] <- self$`distanceIndexes`$toJSON()
+        GetStatusResponseObject[['distanceIndexes']] <- self$`distanceIndexes`
       }
       if (!is.null(self$`totalInferences`)) {
-        GetStatusResponseObject[['totalInferences']] <- self$`totalInferences`$toJSON()
+        GetStatusResponseObject[['totalInferences']] <- self$`totalInferences`
       }
       if (!is.null(self$`numClusters`)) {
-        GetStatusResponseObject[['numClusters']] <- self$`numClusters`$toJSON()
+        GetStatusResponseObject[['numClusters']] <- self$`numClusters`
       }
       if (!is.null(self$`anomalyThreshold`)) {
         GetStatusResponseObject[['anomalyThreshold']] <- self$`anomalyThreshold`
@@ -115,46 +115,36 @@ GetStatusResponse <- R6::R6Class(
       GetStatusResponseObject
     },
     fromJSON = function(GetStatusResponseJson) {
-      GetStatusResponseObject <- jsonlite::fromJSON(GetStatusResponseJson)
+      GetStatusResponseObject <- jsonlite::fromJSON(GetStatusResponseJson, simplifyVector = FALSE)
       if (!is.null(GetStatusResponseObject$`pca`)) {
         pcaObject <- PCA$new()
-        pcaObject$fromJSON(jsonlite::toJSON(GetStatusResponseObject$pca, auto_unbox = TRUE))
-        self$`pca` <- pcaObject
+        self$`pca` <- GetStatusResponseObject$pca
       }
       if (!is.null(GetStatusResponseObject$`clusterGrowth`)) {
         clusterGrowthObject <- Uint64Array$new()
-        clusterGrowthObject$fromJSON(jsonlite::toJSON(GetStatusResponseObject$clusterGrowth, auto_unbox = TRUE))
-        self$`clusterGrowth` <- clusterGrowthObject
+        self$`clusterGrowth` <- GetStatusResponseObject$clusterGrowth
       }
       if (!is.null(GetStatusResponseObject$`clusterSizes`)) {
         clusterSizesObject <- Uint64Array$new()
-        clusterSizesObject$fromJSON(jsonlite::toJSON(GetStatusResponseObject$clusterSizes, auto_unbox = TRUE))
-        self$`clusterSizes` <- clusterSizesObject
+        self$`clusterSizes` <- GetStatusResponseObject$clusterSizes
       }
       if (!is.null(GetStatusResponseObject$`anomalyIndexes`)) {
         anomalyIndexesObject <- Uint16Array$new()
-        anomalyIndexesObject$fromJSON(jsonlite::toJSON(GetStatusResponseObject$anomalyIndexes, auto_unbox = TRUE))
-        self$`anomalyIndexes` <- anomalyIndexesObject
+        self$`anomalyIndexes` <- GetStatusResponseObject$anomalyIndexes
       }
       if (!is.null(GetStatusResponseObject$`frequencyIndexes`)) {
         frequencyIndexesObject <- Uint16Array$new()
-        frequencyIndexesObject$fromJSON(jsonlite::toJSON(GetStatusResponseObject$frequencyIndexes, auto_unbox = TRUE))
-        self$`frequencyIndexes` <- frequencyIndexesObject
+        self$`frequencyIndexes` <- GetStatusResponseObject$frequencyIndexes
       }
       if (!is.null(GetStatusResponseObject$`distanceIndexes`)) {
         distanceIndexesObject <- Uint16Array$new()
-        distanceIndexesObject$fromJSON(jsonlite::toJSON(GetStatusResponseObject$distanceIndexes, auto_unbox = TRUE))
-        self$`distanceIndexes` <- distanceIndexesObject
+        self$`distanceIndexes` <- GetStatusResponseObject$distanceIndexes
       }
       if (!is.null(GetStatusResponseObject$`totalInferences`)) {
-        totalInferencesObject <- BigDecimal$new()
-        totalInferencesObject$fromJSON(jsonlite::toJSON(GetStatusResponseObject$totalInferences, auto_unbox = TRUE))
-        self$`totalInferences` <- totalInferencesObject
+        self$`totalInferences` <- GetStatusResponseObject$totalInferences
       }
       if (!is.null(GetStatusResponseObject$`numClusters`)) {
-        numClustersObject <- BigDecimal$new()
-        numClustersObject$fromJSON(jsonlite::toJSON(GetStatusResponseObject$numClusters, auto_unbox = TRUE))
-        self$`numClusters` <- numClustersObject
+        self$`numClusters` <- GetStatusResponseObject$numClusters
       }
       if (!is.null(GetStatusResponseObject$`anomalyThreshold`)) {
         self$`anomalyThreshold` <- GetStatusResponseObject$`anomalyThreshold`
@@ -177,20 +167,20 @@ GetStatusResponse <- R6::R6Class(
            "anomalyThreshold": %d,
            "state": %s
         }',
-        self$`pca`$toJSON(),
-        self$`clusterGrowth`$toJSON(),
-        self$`clusterSizes`$toJSON(),
-        self$`anomalyIndexes`$toJSON(),
-        self$`frequencyIndexes`$toJSON(),
-        self$`distanceIndexes`$toJSON(),
-        self$`totalInferences`$toJSON(),
-        self$`numClusters`$toJSON(),
+        self$`pca`,
+        self$`clusterGrowth`,
+        self$`clusterSizes`,
+        self$`anomalyIndexes`,
+        self$`frequencyIndexes`,
+        self$`distanceIndexes`,
+        self$`totalInferences`,
+        self$`numClusters`,
         self$`anomalyThreshold`,
         self$`state`
       )
     },
     fromJSONString = function(GetStatusResponseJson) {
-      GetStatusResponseObject <- jsonlite::fromJSON(GetStatusResponseJson)
+      GetStatusResponseObject <- jsonlite::fromJSON(GetStatusResponseJson, simplifyVector = FALSE)
       PCAObject <- PCA$new()
       self$`pca` <- PCAObject$fromJSON(jsonlite::toJSON(GetStatusResponseObject$pca, auto_unbox = TRUE))
       Uint64ArrayObject <- Uint64Array$new()
@@ -203,12 +193,11 @@ GetStatusResponse <- R6::R6Class(
       self$`frequencyIndexes` <- Uint16ArrayObject$fromJSON(jsonlite::toJSON(GetStatusResponseObject$frequencyIndexes, auto_unbox = TRUE))
       Uint16ArrayObject <- Uint16Array$new()
       self$`distanceIndexes` <- Uint16ArrayObject$fromJSON(jsonlite::toJSON(GetStatusResponseObject$distanceIndexes, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`totalInferences` <- BigDecimalObject$fromJSON(jsonlite::toJSON(GetStatusResponseObject$totalInferences, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`numClusters` <- BigDecimalObject$fromJSON(jsonlite::toJSON(GetStatusResponseObject$numClusters, auto_unbox = TRUE))
+      self$`totalInferences` <- GetStatusResponseObject$totalInferences
+      self$`numClusters` <- GetStatusResponseObject$numClusters
       self$`anomalyThreshold` <- GetStatusResponseObject$`anomalyThreshold`
       self$`state` <- GetStatusResponseObject$`state`
     }
   )
 )
+

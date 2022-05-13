@@ -77,7 +77,7 @@ MNano <- R6::R6Class(
       MNanoObject
     },
     fromJSON = function(MNanoJson) {
-      MNanoObject <- jsonlite::fromJSON(MNanoJson)
+      MNanoObject <- jsonlite::fromJSON(MNanoJson, simplifyVector = FALSE)
       if (!is.null(MNanoObject$`m_NanoConfig`)) {
         m_NanoConfigObject <- MNanoConfig$new()
         m_NanoConfigObject$fromJSON(jsonlite::toJSON(MNanoObject$m_NanoConfig, auto_unbox = TRUE))
@@ -124,7 +124,7 @@ MNano <- R6::R6Class(
       )
     },
     fromJSONString = function(MNanoJson) {
-      MNanoObject <- jsonlite::fromJSON(MNanoJson)
+      MNanoObject <- jsonlite::fromJSON(MNanoJson, simplifyVector = FALSE)
       MNanoConfigObject <- MNanoConfig$new()
       self$`m_NanoConfig` <- MNanoConfigObject$fromJSON(jsonlite::toJSON(MNanoObject$m_NanoConfig, auto_unbox = TRUE))
       MagicNumberObject <- MagicNumber$new()
@@ -138,3 +138,4 @@ MNano <- R6::R6Class(
     }
   )
 )
+

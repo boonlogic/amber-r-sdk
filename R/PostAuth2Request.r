@@ -41,7 +41,7 @@ PostAuth2Request <- R6::R6Class(
       PostAuth2RequestObject
     },
     fromJSON = function(PostAuth2RequestJson) {
-      PostAuth2RequestObject <- jsonlite::fromJSON(PostAuth2RequestJson)
+      PostAuth2RequestObject <- jsonlite::fromJSON(PostAuth2RequestJson, simplifyVector = FALSE)
       if (!is.null(PostAuth2RequestObject$`username`)) {
         self$`username` <- PostAuth2RequestObject$`username`
       }
@@ -60,9 +60,10 @@ PostAuth2Request <- R6::R6Class(
       )
     },
     fromJSONString = function(PostAuth2RequestJson) {
-      PostAuth2RequestObject <- jsonlite::fromJSON(PostAuth2RequestJson)
+      PostAuth2RequestObject <- jsonlite::fromJSON(PostAuth2RequestJson, simplifyVector = FALSE)
       self$`username` <- PostAuth2RequestObject$`username`
       self$`password` <- PostAuth2RequestObject$`password`
     }
   )
 )
+

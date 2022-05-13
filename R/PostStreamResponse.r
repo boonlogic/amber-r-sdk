@@ -115,46 +115,46 @@ PostStreamResponse <- R6::R6Class(
         PostStreamResponseObject[['message']] <- self$`message`
       }
       if (!is.null(self$`progress`)) {
-        PostStreamResponseObject[['progress']] <- self$`progress`$toJSON()
+        PostStreamResponseObject[['progress']] <- self$`progress`
       }
       if (!is.null(self$`clusterCount`)) {
-        PostStreamResponseObject[['clusterCount']] <- self$`clusterCount`$toJSON()
+        PostStreamResponseObject[['clusterCount']] <- self$`clusterCount`
       }
       if (!is.null(self$`retryCount`)) {
-        PostStreamResponseObject[['retryCount']] <- self$`retryCount`$toJSON()
+        PostStreamResponseObject[['retryCount']] <- self$`retryCount`
       }
       if (!is.null(self$`streamingWindowSize`)) {
-        PostStreamResponseObject[['streamingWindowSize']] <- self$`streamingWindowSize`$toJSON()
+        PostStreamResponseObject[['streamingWindowSize']] <- self$`streamingWindowSize`
       }
       if (!is.null(self$`totalInferences`)) {
-        PostStreamResponseObject[['totalInferences']] <- self$`totalInferences`$toJSON()
+        PostStreamResponseObject[['totalInferences']] <- self$`totalInferences`
       }
       if (!is.null(self$`RI`)) {
-        PostStreamResponseObject[['RI']] <- self$`RI`$toJSON()
+        PostStreamResponseObject[['RI']] <- self$`RI`
       }
       if (!is.null(self$`SI`)) {
-        PostStreamResponseObject[['SI']] <- self$`SI`$toJSON()
+        PostStreamResponseObject[['SI']] <- self$`SI`
       }
       if (!is.null(self$`AD`)) {
-        PostStreamResponseObject[['AD']] <- self$`AD`$toJSON()
+        PostStreamResponseObject[['AD']] <- self$`AD`
       }
       if (!is.null(self$`AH`)) {
-        PostStreamResponseObject[['AH']] <- self$`AH`$toJSON()
+        PostStreamResponseObject[['AH']] <- self$`AH`
       }
       if (!is.null(self$`AM`)) {
-        PostStreamResponseObject[['AM']] <- self$`AM`$toJSON()
+        PostStreamResponseObject[['AM']] <- self$`AM`
       }
       if (!is.null(self$`AW`)) {
-        PostStreamResponseObject[['AW']] <- self$`AW`$toJSON()
+        PostStreamResponseObject[['AW']] <- self$`AW`
       }
       if (!is.null(self$`ID`)) {
-        PostStreamResponseObject[['ID']] <- self$`ID`$toJSON()
+        PostStreamResponseObject[['ID']] <- self$`ID`
       }
 
       PostStreamResponseObject
     },
     fromJSON = function(PostStreamResponseJson) {
-      PostStreamResponseObject <- jsonlite::fromJSON(PostStreamResponseJson)
+      PostStreamResponseObject <- jsonlite::fromJSON(PostStreamResponseJson, simplifyVector = FALSE)
       if (!is.null(PostStreamResponseObject$`state`)) {
         self$`state` <- PostStreamResponseObject$`state`
       }
@@ -257,19 +257,14 @@ PostStreamResponse <- R6::R6Class(
       )
     },
     fromJSONString = function(PostStreamResponseJson) {
-      PostStreamResponseObject <- jsonlite::fromJSON(PostStreamResponseJson)
+      PostStreamResponseObject <- jsonlite::fromJSON(PostStreamResponseJson, simplifyVector = FALSE)
       self$`state` <- PostStreamResponseObject$`state`
       self$`message` <- PostStreamResponseObject$`message`
-      BigDecimalObject <- BigDecimal$new()
-      self$`progress` <- BigDecimalObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$progress, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`clusterCount` <- BigDecimalObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$clusterCount, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`retryCount` <- BigDecimalObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$retryCount, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`streamingWindowSize` <- BigDecimalObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$streamingWindowSize, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`totalInferences` <- BigDecimalObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$totalInferences, auto_unbox = TRUE))
+      self$`progress` <- PostStreamResponseObject$progress
+      self$`clusterCount` <- PostStreamResponseObject$clusterCount
+      self$`retryCount` <- PostStreamResponseObject$retryCount
+      self$`streamingWindowSize` <- PostStreamResponseObject$streamingWindowSize
+      self$`totalInferences` <- PostStreamResponseObject$totalInferences
       Uint16ArrayObject <- Uint16Array$new()
       self$`RI` <- Uint16ArrayObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$RI, auto_unbox = TRUE))
       Uint16ArrayObject <- Uint16Array$new()
@@ -287,3 +282,4 @@ PostStreamResponse <- R6::R6Class(
     }
   )
 )
+

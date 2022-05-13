@@ -41,7 +41,7 @@ PostSensorResponse <- R6::R6Class(
       PostSensorResponseObject
     },
     fromJSON = function(PostSensorResponseJson) {
-      PostSensorResponseObject <- jsonlite::fromJSON(PostSensorResponseJson)
+      PostSensorResponseObject <- jsonlite::fromJSON(PostSensorResponseJson, simplifyVector = FALSE)
       if (!is.null(PostSensorResponseObject$`label`)) {
         self$`label` <- PostSensorResponseObject$`label`
       }
@@ -60,9 +60,10 @@ PostSensorResponse <- R6::R6Class(
       )
     },
     fromJSONString = function(PostSensorResponseJson) {
-      PostSensorResponseObject <- jsonlite::fromJSON(PostSensorResponseJson)
+      PostSensorResponseObject <- jsonlite::fromJSON(PostSensorResponseJson, simplifyVector = FALSE)
       self$`label` <- PostSensorResponseObject$`label`
       self$`sensorId` <- PostSensorResponseObject$`sensorId`
     }
   )
 )
+

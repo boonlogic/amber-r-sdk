@@ -42,7 +42,7 @@ MRecentAnalytics <- R6::R6Class(
       MRecentAnalyticsObject
     },
     fromJSON = function(MRecentAnalyticsJson) {
-      MRecentAnalyticsObject <- jsonlite::fromJSON(MRecentAnalyticsJson)
+      MRecentAnalyticsObject <- jsonlite::fromJSON(MRecentAnalyticsJson, simplifyVector = FALSE)
       if (!is.null(MRecentAnalyticsObject$`VersionNumber`)) {
         VersionNumberObject <- VersionNumber$new()
         VersionNumberObject$fromJSON(jsonlite::toJSON(MRecentAnalyticsObject$VersionNumber, auto_unbox = TRUE))
@@ -63,10 +63,11 @@ MRecentAnalytics <- R6::R6Class(
       )
     },
     fromJSONString = function(MRecentAnalyticsJson) {
-      MRecentAnalyticsObject <- jsonlite::fromJSON(MRecentAnalyticsJson)
+      MRecentAnalyticsObject <- jsonlite::fromJSON(MRecentAnalyticsJson, simplifyVector = FALSE)
       VersionNumberObject <- VersionNumber$new()
       self$`VersionNumber` <- VersionNumberObject$fromJSON(jsonlite::toJSON(MRecentAnalyticsObject$VersionNumber, auto_unbox = TRUE))
       self$`m_Values` <- MRecentAnalyticsObject$`m_Values`
     }
   )
 )
+

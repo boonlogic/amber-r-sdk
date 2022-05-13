@@ -40,10 +40,10 @@ EndpointUsageInfo <- R6::R6Class(
     toJSON = function() {
       EndpointUsageInfoObject <- list()
       if (!is.null(self$`callsTotal`)) {
-        EndpointUsageInfoObject[['callsTotal']] <- self$`callsTotal`$toJSON()
+        EndpointUsageInfoObject[['callsTotal']] <- self$`callsTotal`
       }
       if (!is.null(self$`callsThisPeriod`)) {
-        EndpointUsageInfoObject[['callsThisPeriod']] <- self$`callsThisPeriod`$toJSON()
+        EndpointUsageInfoObject[['callsThisPeriod']] <- self$`callsThisPeriod`
       }
       if (!is.null(self$`lastCalled`)) {
         EndpointUsageInfoObject[['lastCalled']] <- self$`lastCalled`
@@ -52,16 +52,12 @@ EndpointUsageInfo <- R6::R6Class(
       EndpointUsageInfoObject
     },
     fromJSON = function(EndpointUsageInfoJson) {
-      EndpointUsageInfoObject <- jsonlite::fromJSON(EndpointUsageInfoJson)
+      EndpointUsageInfoObject <- jsonlite::fromJSON(EndpointUsageInfoJson, simplifyVector = FALSE)
       if (!is.null(EndpointUsageInfoObject$`callsTotal`)) {
-        callsTotalObject <- BigDecimal$new()
-        callsTotalObject$fromJSON(jsonlite::toJSON(EndpointUsageInfoObject$callsTotal, auto_unbox = TRUE))
-        self$`callsTotal` <- callsTotalObject
+        self$`callsTotal` <- EndpointUsageInfoObject$callsTotal
       }
       if (!is.null(EndpointUsageInfoObject$`callsThisPeriod`)) {
-        callsThisPeriodObject <- BigDecimal$new()
-        callsThisPeriodObject$fromJSON(jsonlite::toJSON(EndpointUsageInfoObject$callsThisPeriod, auto_unbox = TRUE))
-        self$`callsThisPeriod` <- callsThisPeriodObject
+        self$`callsThisPeriod` <- EndpointUsageInfoObject$callsThisPeriod
       }
       if (!is.null(EndpointUsageInfoObject$`lastCalled`)) {
         self$`lastCalled` <- EndpointUsageInfoObject$`lastCalled`
@@ -74,18 +70,17 @@ EndpointUsageInfo <- R6::R6Class(
            "callsThisPeriod": %s,
            "lastCalled": %s
         }',
-        self$`callsTotal`$toJSON(),
-        self$`callsThisPeriod`$toJSON(),
+        self$`callsTotal`,
+        self$`callsThisPeriod`,
         self$`lastCalled`
       )
     },
     fromJSONString = function(EndpointUsageInfoJson) {
-      EndpointUsageInfoObject <- jsonlite::fromJSON(EndpointUsageInfoJson)
-      BigDecimalObject <- BigDecimal$new()
-      self$`callsTotal` <- BigDecimalObject$fromJSON(jsonlite::toJSON(EndpointUsageInfoObject$callsTotal, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`callsThisPeriod` <- BigDecimalObject$fromJSON(jsonlite::toJSON(EndpointUsageInfoObject$callsThisPeriod, auto_unbox = TRUE))
+      EndpointUsageInfoObject <- jsonlite::fromJSON(EndpointUsageInfoJson, simplifyVector = FALSE)
+      self$`callsTotal` <- EndpointUsageInfoObject$callsTotal
+      self$`callsThisPeriod` <- EndpointUsageInfoObject$callsThisPeriod
       self$`lastCalled` <- EndpointUsageInfoObject$`lastCalled`
     }
   )
 )
+

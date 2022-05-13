@@ -41,7 +41,7 @@ FusionConfig <- R6::R6Class(
       FusionConfigObject
     },
     fromJSON = function(FusionConfigJson) {
-      FusionConfigObject <- jsonlite::fromJSON(FusionConfigJson)
+      FusionConfigObject <- jsonlite::fromJSON(FusionConfigJson, simplifyVector = FALSE)
       if (!is.null(FusionConfigObject$`label`)) {
         self$`label` <- FusionConfigObject$`label`
       }
@@ -60,9 +60,10 @@ FusionConfig <- R6::R6Class(
       )
     },
     fromJSONString = function(FusionConfigJson) {
-      FusionConfigObject <- jsonlite::fromJSON(FusionConfigJson)
+      FusionConfigObject <- jsonlite::fromJSON(FusionConfigJson, simplifyVector = FALSE)
       self$`label` <- FusionConfigObject$`label`
       self$`submitRule` <- FusionConfigObject$`submitRule`
     }
   )
 )
+

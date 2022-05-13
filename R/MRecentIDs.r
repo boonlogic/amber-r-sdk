@@ -42,7 +42,7 @@ MRecentIDs <- R6::R6Class(
       MRecentIDsObject
     },
     fromJSON = function(MRecentIDsJson) {
-      MRecentIDsObject <- jsonlite::fromJSON(MRecentIDsJson)
+      MRecentIDsObject <- jsonlite::fromJSON(MRecentIDsJson, simplifyVector = FALSE)
       if (!is.null(MRecentIDsObject$`VersionNumber`)) {
         VersionNumberObject <- VersionNumber$new()
         VersionNumberObject$fromJSON(jsonlite::toJSON(MRecentIDsObject$VersionNumber, auto_unbox = TRUE))
@@ -63,10 +63,11 @@ MRecentIDs <- R6::R6Class(
       )
     },
     fromJSONString = function(MRecentIDsJson) {
-      MRecentIDsObject <- jsonlite::fromJSON(MRecentIDsJson)
+      MRecentIDsObject <- jsonlite::fromJSON(MRecentIDsJson, simplifyVector = FALSE)
       VersionNumberObject <- VersionNumber$new()
       self$`VersionNumber` <- VersionNumberObject$fromJSON(jsonlite::toJSON(MRecentIDsObject$VersionNumber, auto_unbox = TRUE))
       self$`m_Values` <- MRecentIDsObject$`m_Values`
     }
   )
 )
+

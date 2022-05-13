@@ -42,7 +42,7 @@ MRecentAMs <- R6::R6Class(
       MRecentAMsObject
     },
     fromJSON = function(MRecentAMsJson) {
-      MRecentAMsObject <- jsonlite::fromJSON(MRecentAMsJson)
+      MRecentAMsObject <- jsonlite::fromJSON(MRecentAMsJson, simplifyVector = FALSE)
       if (!is.null(MRecentAMsObject$`VersionNumber`)) {
         VersionNumberObject <- VersionNumber$new()
         VersionNumberObject$fromJSON(jsonlite::toJSON(MRecentAMsObject$VersionNumber, auto_unbox = TRUE))
@@ -63,10 +63,11 @@ MRecentAMs <- R6::R6Class(
       )
     },
     fromJSONString = function(MRecentAMsJson) {
-      MRecentAMsObject <- jsonlite::fromJSON(MRecentAMsJson)
+      MRecentAMsObject <- jsonlite::fromJSON(MRecentAMsJson, simplifyVector = FALSE)
       VersionNumberObject <- VersionNumber$new()
       self$`VersionNumber` <- VersionNumberObject$fromJSON(jsonlite::toJSON(MRecentAMsObject$VersionNumber, auto_unbox = TRUE))
       self$`m_Values` <- MRecentAMsObject$`m_Values`
     }
   )
 )
+

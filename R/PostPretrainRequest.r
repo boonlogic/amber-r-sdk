@@ -40,7 +40,7 @@ PostPretrainRequest <- R6::R6Class(
       PostPretrainRequestObject
     },
     fromJSON = function(PostPretrainRequestJson) {
-      PostPretrainRequestObject <- jsonlite::fromJSON(PostPretrainRequestJson)
+      PostPretrainRequestObject <- jsonlite::fromJSON(PostPretrainRequestJson, simplifyVector = FALSE)
       if (!is.null(PostPretrainRequestObject$`data`)) {
         self$`data` <- PostPretrainRequestObject$`data`
       }
@@ -59,9 +59,10 @@ PostPretrainRequest <- R6::R6Class(
       )
     },
     fromJSONString = function(PostPretrainRequestJson) {
-      PostPretrainRequestObject <- jsonlite::fromJSON(PostPretrainRequestJson)
+      PostPretrainRequestObject <- jsonlite::fromJSON(PostPretrainRequestJson, simplifyVector = FALSE)
       self$`data` <- PostPretrainRequestObject$`data`
       self$`autotuneConfig` <- PostPretrainRequestObject$`autotuneConfig`
     }
   )
 )
+

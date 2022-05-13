@@ -3,7 +3,6 @@
 .PHONY: test format format-check clean generate-client docs go-check
 
 init:
-	ls -lta
 	Rscript bin/init.R
 
 format-check: ## check for format errors
@@ -15,6 +14,7 @@ format-check: ## check for format errors
 
 generate-client: ## generate amber swagger client code based on json schema file
 	swagger-codegen generate -i swagger.json -l r
+	Rscript bin/parse_file.R
 
 docs: ## generate documentation
 	Rscript -e 'devtools::document(quiet = TRUE)'

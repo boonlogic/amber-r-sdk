@@ -67,10 +67,11 @@ PutConfigResponse <- R6::R6Class(
       )
     },
     fromJSONString = function(PutConfigResponseJson) {
-      PutConfigResponseObject <- jsonlite::fromJSON(PutConfigResponseJson)
+      PutConfigResponseObject <- jsonlite::fromJSON(PutConfigResponseJson, simplifyVector = FALSE)
       self$`features` <- lapply(PutConfigResponseObject$`features`, function(x) FusionConfig$new()$fromJSON(jsonlite::toJSON(x, auto_unbox = TRUE)))
       StreamingParametersObject <- StreamingParameters$new()
       self$`streaming` <- StreamingParametersObject$fromJSON(jsonlite::toJSON(PutConfigResponseObject$streaming, auto_unbox = TRUE))
     }
   )
 )
+

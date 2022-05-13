@@ -41,7 +41,7 @@ GetPretrainResponse <- R6::R6Class(
       GetPretrainResponseObject
     },
     fromJSON = function(GetPretrainResponseJson) {
-      GetPretrainResponseObject <- jsonlite::fromJSON(GetPretrainResponseJson)
+      GetPretrainResponseObject <- jsonlite::fromJSON(GetPretrainResponseJson, simplifyVector = FALSE)
       if (!is.null(GetPretrainResponseObject$`state`)) {
         self$`state` <- GetPretrainResponseObject$`state`
       }
@@ -60,9 +60,10 @@ GetPretrainResponse <- R6::R6Class(
       )
     },
     fromJSONString = function(GetPretrainResponseJson) {
-      GetPretrainResponseObject <- jsonlite::fromJSON(GetPretrainResponseJson)
+      GetPretrainResponseObject <- jsonlite::fromJSON(GetPretrainResponseJson, simplifyVector = FALSE)
       self$`state` <- GetPretrainResponseObject$`state`
       self$`message` <- GetPretrainResponseObject$`message`
     }
   )
 )
+

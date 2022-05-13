@@ -23,7 +23,7 @@ Int32Array <- R6::R6Class(
       Int32ArrayObject
     },
     fromJSON = function(Int32ArrayJson) {
-      Int32ArrayObject <- jsonlite::fromJSON(Int32ArrayJson)
+      Int32ArrayObject <- jsonlite::fromJSON(Int32ArrayJson, simplifyVector = FALSE)
     },
     toJSONString = function() {
        sprintf(
@@ -32,7 +32,8 @@ Int32Array <- R6::R6Class(
       )
     },
     fromJSONString = function(Int32ArrayJson) {
-      Int32ArrayObject <- jsonlite::fromJSON(Int32ArrayJson)
+      Int32ArrayObject <- jsonlite::fromJSON(Int32ArrayJson, simplifyVector = FALSE)
     }
   )
 )
+

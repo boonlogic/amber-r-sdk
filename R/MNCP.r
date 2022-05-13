@@ -77,7 +77,7 @@ MNCP <- R6::R6Class(
       MNCPObject
     },
     fromJSON = function(MNCPJson) {
-      MNCPObject <- jsonlite::fromJSON(MNCPJson)
+      MNCPObject <- jsonlite::fromJSON(MNCPJson, simplifyVector = FALSE)
       if (!is.null(MNCPObject$`VersionNumber`)) {
         VersionNumberObject <- VersionNumber$new()
         VersionNumberObject$fromJSON(jsonlite::toJSON(MNCPObject$VersionNumber, auto_unbox = TRUE))
@@ -118,7 +118,7 @@ MNCP <- R6::R6Class(
       )
     },
     fromJSONString = function(MNCPJson) {
-      MNCPObject <- jsonlite::fromJSON(MNCPJson)
+      MNCPObject <- jsonlite::fromJSON(MNCPJson, simplifyVector = FALSE)
       VersionNumberObject <- VersionNumber$new()
       self$`VersionNumber` <- VersionNumberObject$fromJSON(jsonlite::toJSON(MNCPObject$VersionNumber, auto_unbox = TRUE))
       self$`NumOfFeatures` <- MNCPObject$`NumOfFeatures`
@@ -129,3 +129,4 @@ MNCP <- R6::R6Class(
     }
   )
 )
+

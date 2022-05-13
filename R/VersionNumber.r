@@ -23,7 +23,7 @@ VersionNumber <- R6::R6Class(
       VersionNumberObject
     },
     fromJSON = function(VersionNumberJson) {
-      VersionNumberObject <- jsonlite::fromJSON(VersionNumberJson)
+      VersionNumberObject <- jsonlite::fromJSON(VersionNumberJson, simplifyVector = FALSE)
     },
     toJSONString = function() {
        sprintf(
@@ -32,7 +32,8 @@ VersionNumber <- R6::R6Class(
       )
     },
     fromJSONString = function(VersionNumberJson) {
-      VersionNumberObject <- jsonlite::fromJSON(VersionNumberJson)
+      VersionNumberObject <- jsonlite::fromJSON(VersionNumberJson, simplifyVector = FALSE)
     }
   )
 )
+

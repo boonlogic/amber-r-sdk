@@ -42,7 +42,7 @@ MRecentFloats <- R6::R6Class(
       MRecentFloatsObject
     },
     fromJSON = function(MRecentFloatsJson) {
-      MRecentFloatsObject <- jsonlite::fromJSON(MRecentFloatsJson)
+      MRecentFloatsObject <- jsonlite::fromJSON(MRecentFloatsJson, simplifyVector = FALSE)
       if (!is.null(MRecentFloatsObject$`VersionNumber`)) {
         VersionNumberObject <- VersionNumber$new()
         VersionNumberObject$fromJSON(jsonlite::toJSON(MRecentFloatsObject$VersionNumber, auto_unbox = TRUE))
@@ -63,10 +63,11 @@ MRecentFloats <- R6::R6Class(
       )
     },
     fromJSONString = function(MRecentFloatsJson) {
-      MRecentFloatsObject <- jsonlite::fromJSON(MRecentFloatsJson)
+      MRecentFloatsObject <- jsonlite::fromJSON(MRecentFloatsJson, simplifyVector = FALSE)
       VersionNumberObject <- VersionNumber$new()
       self$`VersionNumber` <- VersionNumberObject$fromJSON(jsonlite::toJSON(MRecentFloatsObject$VersionNumber, auto_unbox = TRUE))
       self$`m_Values` <- MRecentFloatsObject$`m_Values`
     }
   )
 )
+

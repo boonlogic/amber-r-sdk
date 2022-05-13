@@ -54,16 +54,16 @@ StreamingEndpointUsageInfo <- R6::R6Class(
     toJSON = function() {
       StreamingEndpointUsageInfoObject <- list()
       if (!is.null(self$`callsTotal`)) {
-        StreamingEndpointUsageInfoObject[['callsTotal']] <- self$`callsTotal`$toJSON()
+        StreamingEndpointUsageInfoObject[['callsTotal']] <- self$`callsTotal`
       }
       if (!is.null(self$`callsThisPeriod`)) {
-        StreamingEndpointUsageInfoObject[['callsThisPeriod']] <- self$`callsThisPeriod`$toJSON()
+        StreamingEndpointUsageInfoObject[['callsThisPeriod']] <- self$`callsThisPeriod`
       }
       if (!is.null(self$`samplesTotal`)) {
-        StreamingEndpointUsageInfoObject[['samplesTotal']] <- self$`samplesTotal`$toJSON()
+        StreamingEndpointUsageInfoObject[['samplesTotal']] <- self$`samplesTotal`
       }
       if (!is.null(self$`samplesThisPeriod`)) {
-        StreamingEndpointUsageInfoObject[['samplesThisPeriod']] <- self$`samplesThisPeriod`$toJSON()
+        StreamingEndpointUsageInfoObject[['samplesThisPeriod']] <- self$`samplesThisPeriod`
       }
       if (!is.null(self$`lastCalled`)) {
         StreamingEndpointUsageInfoObject[['lastCalled']] <- self$`lastCalled`
@@ -72,26 +72,18 @@ StreamingEndpointUsageInfo <- R6::R6Class(
       StreamingEndpointUsageInfoObject
     },
     fromJSON = function(StreamingEndpointUsageInfoJson) {
-      StreamingEndpointUsageInfoObject <- jsonlite::fromJSON(StreamingEndpointUsageInfoJson)
+      StreamingEndpointUsageInfoObject <- jsonlite::fromJSON(StreamingEndpointUsageInfoJson, simplifyVector = FALSE)
       if (!is.null(StreamingEndpointUsageInfoObject$`callsTotal`)) {
-        callsTotalObject <- BigDecimal$new()
-        callsTotalObject$fromJSON(jsonlite::toJSON(StreamingEndpointUsageInfoObject$callsTotal, auto_unbox = TRUE))
-        self$`callsTotal` <- callsTotalObject
+        self$`callsTotal` <- StreamingEndpointUsageInfoObject$callsTotal
       }
       if (!is.null(StreamingEndpointUsageInfoObject$`callsThisPeriod`)) {
-        callsThisPeriodObject <- BigDecimal$new()
-        callsThisPeriodObject$fromJSON(jsonlite::toJSON(StreamingEndpointUsageInfoObject$callsThisPeriod, auto_unbox = TRUE))
-        self$`callsThisPeriod` <- callsThisPeriodObject
+        self$`callsThisPeriod` <- StreamingEndpointUsageInfoObject$callsThisPeriod
       }
       if (!is.null(StreamingEndpointUsageInfoObject$`samplesTotal`)) {
-        samplesTotalObject <- BigDecimal$new()
-        samplesTotalObject$fromJSON(jsonlite::toJSON(StreamingEndpointUsageInfoObject$samplesTotal, auto_unbox = TRUE))
-        self$`samplesTotal` <- samplesTotalObject
+        self$`samplesTotal` <- StreamingEndpointUsageInfoObject$samplesTotal
       }
       if (!is.null(StreamingEndpointUsageInfoObject$`samplesThisPeriod`)) {
-        samplesThisPeriodObject <- BigDecimal$new()
-        samplesThisPeriodObject$fromJSON(jsonlite::toJSON(StreamingEndpointUsageInfoObject$samplesThisPeriod, auto_unbox = TRUE))
-        self$`samplesThisPeriod` <- samplesThisPeriodObject
+        self$`samplesThisPeriod` <- StreamingEndpointUsageInfoObject$samplesThisPeriod
       }
       if (!is.null(StreamingEndpointUsageInfoObject$`lastCalled`)) {
         self$`lastCalled` <- StreamingEndpointUsageInfoObject$`lastCalled`
@@ -106,24 +98,21 @@ StreamingEndpointUsageInfo <- R6::R6Class(
            "samplesThisPeriod": %s,
            "lastCalled": %s
         }',
-        self$`callsTotal`$toJSON(),
-        self$`callsThisPeriod`$toJSON(),
-        self$`samplesTotal`$toJSON(),
-        self$`samplesThisPeriod`$toJSON(),
+        self$`callsTotal`,
+        self$`callsThisPeriod`,
+        self$`samplesTotal`,
+        self$`samplesThisPeriod`,
         self$`lastCalled`
       )
     },
     fromJSONString = function(StreamingEndpointUsageInfoJson) {
-      StreamingEndpointUsageInfoObject <- jsonlite::fromJSON(StreamingEndpointUsageInfoJson)
-      BigDecimalObject <- BigDecimal$new()
-      self$`callsTotal` <- BigDecimalObject$fromJSON(jsonlite::toJSON(StreamingEndpointUsageInfoObject$callsTotal, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`callsThisPeriod` <- BigDecimalObject$fromJSON(jsonlite::toJSON(StreamingEndpointUsageInfoObject$callsThisPeriod, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`samplesTotal` <- BigDecimalObject$fromJSON(jsonlite::toJSON(StreamingEndpointUsageInfoObject$samplesTotal, auto_unbox = TRUE))
-      BigDecimalObject <- BigDecimal$new()
-      self$`samplesThisPeriod` <- BigDecimalObject$fromJSON(jsonlite::toJSON(StreamingEndpointUsageInfoObject$samplesThisPeriod, auto_unbox = TRUE))
+      StreamingEndpointUsageInfoObject <- jsonlite::fromJSON(StreamingEndpointUsageInfoJson, simplifyVector = FALSE)
+      self$`callsTotal` <- StreamingEndpointUsageInfoObject$callsTotal
+      self$`callsThisPeriod` <- StreamingEndpointUsageInfoObject$callsThisPeriod
+      self$`samplesTotal` <- StreamingEndpointUsageInfoObject$samplesTotal
+      self$`samplesThisPeriod` <- StreamingEndpointUsageInfoObject$samplesThisPeriod
       self$`lastCalled` <- StreamingEndpointUsageInfoObject$`lastCalled`
     }
   )
 )
+

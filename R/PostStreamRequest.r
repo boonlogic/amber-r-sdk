@@ -40,7 +40,7 @@ PostStreamRequest <- R6::R6Class(
       PostStreamRequestObject
     },
     fromJSON = function(PostStreamRequestJson) {
-      PostStreamRequestObject <- jsonlite::fromJSON(PostStreamRequestJson)
+      PostStreamRequestObject <- jsonlite::fromJSON(PostStreamRequestJson, simplifyVector = FALSE)
       if (!is.null(PostStreamRequestObject$`saveImage`)) {
         self$`saveImage` <- PostStreamRequestObject$`saveImage`
       }
@@ -59,9 +59,10 @@ PostStreamRequest <- R6::R6Class(
       )
     },
     fromJSONString = function(PostStreamRequestJson) {
-      PostStreamRequestObject <- jsonlite::fromJSON(PostStreamRequestJson)
+      PostStreamRequestObject <- jsonlite::fromJSON(PostStreamRequestJson, simplifyVector = FALSE)
       self$`saveImage` <- PostStreamRequestObject$`saveImage`
       self$`data` <- PostStreamRequestObject$`data`
     }
   )
 )
+

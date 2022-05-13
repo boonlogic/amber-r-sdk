@@ -74,13 +74,13 @@ MAutotune <- R6::R6Class(
     toJSON = function() {
       MAutotuneObject <- list()
       if (!is.null(self$`VersionNumber`)) {
-        MAutotuneObject[['VersionNumber']] <- self$`VersionNumber`$toJSON()
+        MAutotuneObject[['VersionNumber']] <- self$`VersionNumber`
       }
       if (!is.null(self$`m_AutotuningInProgress`)) {
         MAutotuneObject[['m_AutotuningInProgress']] <- self$`m_AutotuningInProgress`
       }
       if (!is.null(self$`m_PercentComplete`)) {
-        MAutotuneObject[['m_PercentComplete']] <- self$`m_PercentComplete`$toJSON()
+        MAutotuneObject[['m_PercentComplete']] <- self$`m_PercentComplete`
       }
       if (!is.null(self$`m_AutotuningSucceeded`)) {
         MAutotuneObject[['m_AutotuningSucceeded']] <- self$`m_AutotuningSucceeded`
@@ -95,28 +95,25 @@ MAutotune <- R6::R6Class(
         MAutotuneObject[['m_FeaturesToTuneArray']] <- self$`m_FeaturesToTuneArray`
       }
       if (!is.null(self$`m_NCP`)) {
-        MAutotuneObject[['m_NCP']] <- self$`m_NCP`$toJSON()
+        MAutotuneObject[['m_NCP']] <- self$`m_NCP`
       }
       if (!is.null(self$`m_AP`)) {
-        MAutotuneObject[['m_AP']] <- self$`m_AP`$toJSON()
+        MAutotuneObject[['m_AP']] <- self$`m_AP`
       }
 
       MAutotuneObject
     },
     fromJSON = function(MAutotuneJson) {
-      MAutotuneObject <- jsonlite::fromJSON(MAutotuneJson)
+      MAutotuneObject <- jsonlite::fromJSON(MAutotuneJson, simplifyVector = FALSE)
       if (!is.null(MAutotuneObject$`VersionNumber`)) {
         VersionNumberObject <- VersionNumber$new()
-        VersionNumberObject$fromJSON(jsonlite::toJSON(MAutotuneObject$VersionNumber, auto_unbox = TRUE))
-        self$`VersionNumber` <- VersionNumberObject
+        self$`VersionNumber` <- MAutotuneObject$VersionNumber
       }
       if (!is.null(MAutotuneObject$`m_AutotuningInProgress`)) {
         self$`m_AutotuningInProgress` <- MAutotuneObject$`m_AutotuningInProgress`
       }
       if (!is.null(MAutotuneObject$`m_PercentComplete`)) {
-        m_PercentCompleteObject <- BigDecimal$new()
-        m_PercentCompleteObject$fromJSON(jsonlite::toJSON(MAutotuneObject$m_PercentComplete, auto_unbox = TRUE))
-        self$`m_PercentComplete` <- m_PercentCompleteObject
+        self$`m_PercentComplete` <- MAutotuneObject$m_PercentComplete
       }
       if (!is.null(MAutotuneObject$`m_AutotuningSucceeded`)) {
         self$`m_AutotuningSucceeded` <- MAutotuneObject$`m_AutotuningSucceeded`
@@ -132,13 +129,11 @@ MAutotune <- R6::R6Class(
       }
       if (!is.null(MAutotuneObject$`m_NCP`)) {
         m_NCPObject <- MNCP$new()
-        m_NCPObject$fromJSON(jsonlite::toJSON(MAutotuneObject$m_NCP, auto_unbox = TRUE))
-        self$`m_NCP` <- m_NCPObject
+        self$`m_NCP` <- MAutotuneObject$m_NCP
       }
       if (!is.null(MAutotuneObject$`m_AP`)) {
         m_APObject <- MAP$new()
-        m_APObject$fromJSON(jsonlite::toJSON(MAutotuneObject$m_AP, auto_unbox = TRUE))
-        self$`m_AP` <- m_APObject
+        self$`m_AP` <- MAutotuneObject$m_AP
       }
     },
     toJSONString = function() {
@@ -154,24 +149,23 @@ MAutotune <- R6::R6Class(
            "m_NCP": %s,
            "m_AP": %s
         }',
-        self$`VersionNumber`$toJSON(),
+        self$`VersionNumber`,
         self$`m_AutotuningInProgress`,
-        self$`m_PercentComplete`$toJSON(),
+        self$`m_PercentComplete`,
         self$`m_AutotuningSucceeded`,
         self$`m_NumPatternsToAutotune`,
         self$`m_ErrorStringBuffer`,
         lapply(self$`m_FeaturesToTuneArray`, function(x) paste(paste0('"', x, '"'), sep=",")),
-        self$`m_NCP`$toJSON(),
-        self$`m_AP`$toJSON()
+        self$`m_NCP`,
+        self$`m_AP`
       )
     },
     fromJSONString = function(MAutotuneJson) {
-      MAutotuneObject <- jsonlite::fromJSON(MAutotuneJson)
+      MAutotuneObject <- jsonlite::fromJSON(MAutotuneJson, simplifyVector = FALSE)
       VersionNumberObject <- VersionNumber$new()
       self$`VersionNumber` <- VersionNumberObject$fromJSON(jsonlite::toJSON(MAutotuneObject$VersionNumber, auto_unbox = TRUE))
       self$`m_AutotuningInProgress` <- MAutotuneObject$`m_AutotuningInProgress`
-      BigDecimalObject <- BigDecimal$new()
-      self$`m_PercentComplete` <- BigDecimalObject$fromJSON(jsonlite::toJSON(MAutotuneObject$m_PercentComplete, auto_unbox = TRUE))
+      self$`m_PercentComplete` <- MAutotuneObject$m_PercentComplete
       self$`m_AutotuningSucceeded` <- MAutotuneObject$`m_AutotuningSucceeded`
       self$`m_NumPatternsToAutotune` <- MAutotuneObject$`m_NumPatternsToAutotune`
       self$`m_ErrorStringBuffer` <- MAutotuneObject$`m_ErrorStringBuffer`
@@ -183,3 +177,4 @@ MAutotune <- R6::R6Class(
     }
   )
 )
+

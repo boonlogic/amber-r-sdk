@@ -68,7 +68,7 @@ MBufferStats <- R6::R6Class(
       MBufferStatsObject
     },
     fromJSON = function(MBufferStatsJson) {
-      MBufferStatsObject <- jsonlite::fromJSON(MBufferStatsJson)
+      MBufferStatsObject <- jsonlite::fromJSON(MBufferStatsJson, simplifyVector = FALSE)
       if (!is.null(MBufferStatsObject$`VersionNumber`)) {
         VersionNumberObject <- VersionNumber$new()
         VersionNumberObject$fromJSON(jsonlite::toJSON(MBufferStatsObject$VersionNumber, auto_unbox = TRUE))
@@ -104,7 +104,7 @@ MBufferStats <- R6::R6Class(
       )
     },
     fromJSONString = function(MBufferStatsJson) {
-      MBufferStatsObject <- jsonlite::fromJSON(MBufferStatsJson)
+      MBufferStatsObject <- jsonlite::fromJSON(MBufferStatsJson, simplifyVector = FALSE)
       VersionNumberObject <- VersionNumber$new()
       self$`VersionNumber` <- VersionNumberObject$fromJSON(jsonlite::toJSON(MBufferStatsObject$VersionNumber, auto_unbox = TRUE))
       self$`TotalBytesWritten` <- MBufferStatsObject$`TotalBytesWritten`
@@ -114,3 +114,4 @@ MBufferStats <- R6::R6Class(
     }
   )
 )
+
