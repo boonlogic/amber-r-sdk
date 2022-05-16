@@ -23,7 +23,7 @@ MayContainNullsArray <- R6::R6Class(
       MayContainNullsArrayObject
     },
     fromJSON = function(MayContainNullsArrayJson) {
-      MayContainNullsArrayObject <- jsonlite::fromJSON(MayContainNullsArrayJson)
+      MayContainNullsArrayObject <- jsonlite::fromJSON(MayContainNullsArrayJson, simplifyVector = FALSE)
     },
     toJSONString = function() {
        sprintf(
@@ -32,7 +32,9 @@ MayContainNullsArray <- R6::R6Class(
       )
     },
     fromJSONString = function(MayContainNullsArrayJson) {
-      MayContainNullsArrayObject <- jsonlite::fromJSON(MayContainNullsArrayJson)
+      MayContainNullsArrayObject <- jsonlite::fromJSON(MayContainNullsArrayJson, simplifyVector = FALSE)
     }
   )
 )
+
+

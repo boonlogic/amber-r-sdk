@@ -130,25 +130,25 @@ PostStreamResponse <- R6::R6Class(
         PostStreamResponseObject[['totalInferences']] <- self$`totalInferences`
       }
       if (!is.null(self$`RI`)) {
-        PostStreamResponseObject[['RI']] <- self$`RI`$toJSON()
+        PostStreamResponseObject[['RI']] <- self$`RI`
       }
       if (!is.null(self$`SI`)) {
-        PostStreamResponseObject[['SI']] <- self$`SI`$toJSON()
+        PostStreamResponseObject[['SI']] <- self$`SI`
       }
       if (!is.null(self$`AD`)) {
-        PostStreamResponseObject[['AD']] <- self$`AD`$toJSON()
+        PostStreamResponseObject[['AD']] <- self$`AD`
       }
       if (!is.null(self$`AH`)) {
-        PostStreamResponseObject[['AH']] <- self$`AH`$toJSON()
+        PostStreamResponseObject[['AH']] <- self$`AH`
       }
       if (!is.null(self$`AM`)) {
-        PostStreamResponseObject[['AM']] <- self$`AM`$toJSON()
+        PostStreamResponseObject[['AM']] <- self$`AM`
       }
       if (!is.null(self$`AW`)) {
-        PostStreamResponseObject[['AW']] <- self$`AW`$toJSON()
+        PostStreamResponseObject[['AW']] <- self$`AW`
       }
       if (!is.null(self$`ID`)) {
-        PostStreamResponseObject[['ID']] <- self$`ID`$toJSON()
+        PostStreamResponseObject[['ID']] <- self$`ID`
       }
 
       PostStreamResponseObject
@@ -177,39 +177,25 @@ PostStreamResponse <- R6::R6Class(
         self$`totalInferences` <- PostStreamResponseObject$totalInferences
       }
       if (!is.null(PostStreamResponseObject$`RI`)) {
-        RIObject <- Uint16Array$new()
-        RIObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$RI, auto_unbox = TRUE))
-        self$`RI` <- RIObject
+        self$`RI` <- PostStreamResponseObject$RI
       }
       if (!is.null(PostStreamResponseObject$`SI`)) {
-        SIObject <- Uint16Array$new()
-        SIObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$SI, auto_unbox = TRUE))
-        self$`SI` <- SIObject
+        self$`SI` <- PostStreamResponseObject$SI
       }
       if (!is.null(PostStreamResponseObject$`AD`)) {
-        ADObject <- Uint16Array$new()
-        ADObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$AD, auto_unbox = TRUE))
-        self$`AD` <- ADObject
+        self$`AD` <- PostStreamResponseObject$AD
       }
       if (!is.null(PostStreamResponseObject$`AH`)) {
-        AHObject <- Uint16Array$new()
-        AHObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$AH, auto_unbox = TRUE))
-        self$`AH` <- AHObject
+        self$`AH` <- PostStreamResponseObject$AH
       }
       if (!is.null(PostStreamResponseObject$`AM`)) {
-        AMObject <- Float32Array$new()
-        AMObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$AM, auto_unbox = TRUE))
-        self$`AM` <- AMObject
+        self$`AM` <- PostStreamResponseObject$AM
       }
       if (!is.null(PostStreamResponseObject$`AW`)) {
-        AWObject <- Uint16Array$new()
-        AWObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$AW, auto_unbox = TRUE))
-        self$`AW` <- AWObject
+        self$`AW` <- PostStreamResponseObject$AW
       }
       if (!is.null(PostStreamResponseObject$`ID`)) {
-        IDObject <- Int32Array$new()
-        IDObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$ID, auto_unbox = TRUE))
-        self$`ID` <- IDObject
+        self$`ID` <- PostStreamResponseObject$ID
       }
     },
     toJSONString = function() {
@@ -237,13 +223,13 @@ PostStreamResponse <- R6::R6Class(
         self$`retryCount`,
         self$`streamingWindowSize`,
         self$`totalInferences`,
-        self$`RI`$toJSON(),
-        self$`SI`$toJSON(),
-        self$`AD`$toJSON(),
-        self$`AH`$toJSON(),
-        self$`AM`$toJSON(),
-        self$`AW`$toJSON(),
-        self$`ID`$toJSON()
+        self$`RI`,
+        self$`SI`,
+        self$`AD`,
+        self$`AH`,
+        self$`AM`,
+        self$`AW`,
+        self$`ID`
       )
     },
     fromJSONString = function(PostStreamResponseJson) {
@@ -255,20 +241,13 @@ PostStreamResponse <- R6::R6Class(
       self$`retryCount` <- PostStreamResponseObject$retryCount
       self$`streamingWindowSize` <- PostStreamResponseObject$streamingWindowSize
       self$`totalInferences` <- PostStreamResponseObject$totalInferences
-      Uint16ArrayObject <- Uint16Array$new()
-      self$`RI` <- Uint16ArrayObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$RI, auto_unbox = TRUE))
-      Uint16ArrayObject <- Uint16Array$new()
-      self$`SI` <- Uint16ArrayObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$SI, auto_unbox = TRUE))
-      Uint16ArrayObject <- Uint16Array$new()
-      self$`AD` <- Uint16ArrayObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$AD, auto_unbox = TRUE))
-      Uint16ArrayObject <- Uint16Array$new()
-      self$`AH` <- Uint16ArrayObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$AH, auto_unbox = TRUE))
-      Float32ArrayObject <- Float32Array$new()
-      self$`AM` <- Float32ArrayObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$AM, auto_unbox = TRUE))
-      Uint16ArrayObject <- Uint16Array$new()
-      self$`AW` <- Uint16ArrayObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$AW, auto_unbox = TRUE))
-      Int32ArrayObject <- Int32Array$new()
-      self$`ID` <- Int32ArrayObject$fromJSON(jsonlite::toJSON(PostStreamResponseObject$ID, auto_unbox = TRUE))
+      self$`RI` <- PostStreamResponseObject$RI
+      self$`SI` <- PostStreamResponseObject$SI
+      self$`AD` <- PostStreamResponseObject$AD
+      self$`AH` <- PostStreamResponseObject$AH
+      self$`AM` <- PostStreamResponseObject$AM
+      self$`AW` <- PostStreamResponseObject$AW
+      self$`ID` <- PostStreamResponseObject$ID
     }
   )
 )
