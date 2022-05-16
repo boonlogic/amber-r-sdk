@@ -199,9 +199,22 @@ test_that("stream_fusion", {
                 )
 
     resp <- amber$stream_fusion(sensor_id, vector = v)
-    expect_false(FALSE)
-    # TODO: figure out uint array actually being saved (it doesn't return the value anywhere)
-    # expect_mapequal(resp, exp)
+    expect_setequal(names(resp), names(exp))
+    expect_equal(resp$vector, exp$vector)
+    expect_equal(resp$results$clusterCount, exp$results$clusterCount)
+    expect_equal(resp$results$message, exp$results$message)
+    expect_equal(resp$results$progress, exp$results$progress)
+    expect_equal(resp$results$retryCount, exp$results$retryCount)
+    expect_equal(resp$results$state, exp$results$state)
+    expect_equal(resp$results$streamingWindowSize, exp$results$streamingWindowSize)
+    expect_equal(resp$results$totalInferences, exp$results$totalInferences)
+    expect_equal(resp$results$AW, exp$results$AW)
+    expect_equal(resp$results$AH, exp$results$AH)
+    expect_equal(resp$results$AD, exp$results$AD)
+    expect_equal(resp$results$AM, exp$results$AM)
+    expect_equal(resp$results$ID, exp$results$ID)
+    expect_equal(resp$results$RI, exp$results$RI)
+    expect_equal(resp$results$SI, exp$results$SI)
 })
 
 test_that("stream_fusion_negative", {
@@ -232,13 +245,11 @@ test_that("stream_sensor", {
     expect_true("AW" %in% names(results))
 
     # scalar data should return SI of length 1
-    # TODO
-    # expect_true(length(results[["SI"]]) == 1)
+    expect_true(length(results[["SI"]]) == 1)
 
     # array data should return SI of same length
     results <- amber$stream_sensor(sensor_id, 1:5)
-    # TODO
-    # expect_true(length(results[["SI"]]) == 5)
+    expect_true(length(results[["SI"]]) == 5)
 })
 
 test_that("stream_sensor_negative", {
