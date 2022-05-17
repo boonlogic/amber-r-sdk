@@ -1,6 +1,6 @@
-suppressPackageStartupMessages(library(tidyverse))
+library(stringr)
 
-fileName <- "R/sdk.R"
+fileName <- "R/EndpointUsageInfo.R"
 
 for (fileName in list.files("R", full.names = TRUE)) {
 	if (fileName == "R/sdk.r") {
@@ -30,21 +30,29 @@ for (fileName in list.files("R", full.names = TRUE)) {
 
 		for (i in seq_along(json_lite_loc)) {
 			s <- f_split[json_lite_loc[i]]
-			first <- loc[i] + 1
-			last <- last(unlist(str_locate_all(s, ","))) - 1
-			object_var <- substr(s, first, last)
-			var <- str_split(object_var, "\\$", simplify = TRUE)[2]
 			len <- length(unlist(str_locate_all(s, "\\$")))
 			was_big_decimal <- FALSE
 
 			# fromJSONString
 			if (str_detect(s, "BigDecimalObject\\$") && len == 6) {
 				was_big_decimal <- TRUE
+
+				first <- loc[i] + 1
+				last <- unlist(str_locate_all(s, ","))[length(unlist(str_locate_all(s, ",")))] - 1
+				object_var <- substr(s, first, last)
+				var <- str_split(object_var, "\\$", simplify = TRUE)[2]
+
 				first <- str_locate(s, "BigDecimalObject\\$")[1]
 				f_split[json_lite_loc[i]] <- paste0(substr(s, 1, first - 1), object_var)
 			# fromJSON
 			} else if (str_detect(f_split[json_lite_loc[i]-1], "BigDecimal\\$") && len == 4) {
 				was_big_decimal <- TRUE
+
+				first <- loc[i] + 1
+				last <- unlist(str_locate_all(s, ","))[length(unlist(str_locate_all(s, ",")))] - 1
+				object_var <- substr(s, first, last)
+				var <- str_split(object_var, "\\$", simplify = TRUE)[2]
+
 				s <- f_split[json_lite_loc[i]+1]
 				first <- str_locate(s, "<-")[2]
 				indeces_to_remove <<- append(indeces_to_remove, json_lite_loc[i])
@@ -68,21 +76,29 @@ for (fileName in list.files("R", full.names = TRUE)) {
 
 		for (i in seq_along(json_lite_loc)) {
 			s <- f_split[json_lite_loc[i]]
-			first <- loc[i] + 1
-			last <- last(unlist(str_locate_all(s, ","))) - 1
-			object_var <- substr(s, first, last)
-			var <- str_split(object_var, "\\$", simplify = TRUE)[2]
 			len <- length(unlist(str_locate_all(s, "\\$")))
 			was_array <- FALSE
 
 			# fromJSONString
 			if (str_detect(s, "ArrayObject\\$") && len == 6) {
 				was_array <- TRUE
+
+				first <- loc[i] + 1
+				last <- unlist(str_locate_all(s, ","))[length(unlist(str_locate_all(s, ",")))] - 1
+				object_var <- substr(s, first, last)
+				var <- str_split(object_var, "\\$", simplify = TRUE)[2]
+
 				first <- str_locate(s, "<- ")[2]
 				f_split[json_lite_loc[i]] <- paste0(substr(s, 1, first), object_var)
 			# fromJSON
 			} else if (str_detect(f_split[json_lite_loc[i]-1], "Array\\$") && len == 4) {
 				was_array <- TRUE
+
+				first <- loc[i] + 1
+				last <- unlist(str_locate_all(s, ","))[length(unlist(str_locate_all(s, ",")))] - 1
+				object_var <- substr(s, first, last)
+				var <- str_split(object_var, "\\$", simplify = TRUE)[2]
+
 				s <- f_split[json_lite_loc[i]+1]
 				first <- str_locate(s, "<-")[2]
 				indeces_to_remove <<- append(indeces_to_remove, json_lite_loc[i])

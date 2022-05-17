@@ -6,7 +6,7 @@ renv::init()
 
 packages <- list("testthat",
 				 "devtools",
-				 "tidyverse")
+				 "stringr")
 
 for (package in packages) {
 	if (!(package %in% installed.packages())) {
