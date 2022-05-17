@@ -106,9 +106,9 @@ stream_fusion Stream data to a sensor fusion vector
 \if{html}{\out{<div class="r">}}\preformatted{AmberClient$new(
   license_id = "default",
   license_file = "~/.Amber.license",
-  verify = TRUE,
+  verify = FALSE,
   cert = NULL,
-  timeout = 360
+  timeout = 60000
 )}\if{html}{\out{</div>}}
 }
 
@@ -187,13 +187,15 @@ sensor ID
 \subsection{Method \code{update_label()}}{
 Change the string identifier for the sensor
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$update_label(sensor_id)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$update_label(sensor_id, label)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{sensor_id}}{Boon generate identifier for the sensor}
+
+\item{\code{label}}{String label for the sensor}
 }
 \if{html}{\out{</div>}}
 }
@@ -217,7 +219,7 @@ Set the configuration for the sensor
   learning_rate_denominator = 10000,
   learning_max_clusters = 1000,
   learning_max_samples = 1e+06,
-  features = NULL
+  features = ""
 )}\if{html}{\out{</div>}}
 }
 
@@ -473,7 +475,7 @@ string specifying what state pretraining is in
 \subsection{Method \code{get_root_cause()}}{
 Get the root cause analysis for the cluster ids or the input pattern vectors
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AmberClient$get_root_cause(sensor_id, cluster_id, pattern)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AmberClient$get_root_cause(sensor_id, cluster_id, pattern_list)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
