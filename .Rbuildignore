@@ -2,8 +2,12 @@
 ^renv\.lock$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-.swagger*
+.swagger-codegen-ignore
+.swagger-codegen
 swagger.json
 bin
 Makefile
 ^.*\.Rcheck$
+.gitlab-ci.yml
+.gitignore
+_config.yml

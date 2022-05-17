@@ -60,3 +60,13 @@ export(Uint32Array)
 export(Uint64Array)
 export(Version)
 export(VersionNumber)
+export(AmberClient)
+
+import(httr)
+import(jsonlite)
+importFrom(R6, R6Class)
+importFrom(fs, path_expand)
+importFrom(rlang, abort)
+import(testthat)
+importFrom(iterators, iter)
+

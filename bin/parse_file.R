@@ -4,6 +4,12 @@ fileName <- "R/sdk.R"
 
 for (fileName in list.files("R", full.names = TRUE)) {
 	if (fileName == "R/sdk.r") {
+		f <- readChar("NAMESPACE", file.info("NAMESPACE")$size)
+		f <- paste0(f, "export(AmberClient)\n")
+		f <- paste0(f, "\n",
+					   "import(httr)\nimport(jsonlite)\nimportFrom(R6, R6Class)\nimportFrom(fs, path_expand)\n",
+					   "importFrom(rlang, abort)\nimport(testthat)\nimportFrom(iterators, iter)\n")
+		writeLines(f, "NAMESPACE")
 		next
 	}
 	f <- readChar(fileName, file.info(fileName)$size)
