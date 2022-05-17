@@ -8,7 +8,7 @@ for (fileName in list.files("R", full.names = TRUE)) {
 		f <- paste0(f, "export(AmberClient)\n")
 		f <- paste0(f, "\n",
 					   "import(httr)\nimport(jsonlite)\nimportFrom(R6, R6Class)\nimportFrom(fs, path_expand)\n",
-					   "importFrom(rlang, abort)\nimport(testthat)\nimportFrom(iterators, iter)\n")
+					   "importFrom(rlang, abort)\nimport(testthat)\nimportFrom(iterators, iter)\nimportFrom(rjson, fromJSON)\n")
 		writeLines(f, "NAMESPACE")
 		next
 	}

@@ -69,4 +69,5 @@ importFrom(fs, path_expand)
 importFrom(rlang, abort)
 import(testthat)
 importFrom(iterators, iter)
+importFrom(rjson, fromJSON)
 
