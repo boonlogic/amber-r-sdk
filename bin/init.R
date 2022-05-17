@@ -4,17 +4,8 @@ if (!("renv" %in% installed.packages())) {
 
 renv::init()
 
-packages <- list("httr",
-				 "R6",
-				 "fs",
-				 "rlang",
-				 "testthat",
-				 "formatR",
+packages <- list("testthat",
 				 "devtools",
-				 "jsonlite",
-				 "iterators",
-				 "rjson",
-				 "gms",
 				 "tidyverse")
 
 for (package in packages) {

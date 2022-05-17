@@ -63,11 +63,11 @@ export(VersionNumber)
 export(AmberClient)
 
 import(httr)
-import(jsonlite)
+importFrom(jsonlite, fromJSON)
+importFrom(jsonlite, toJSON)
 importFrom(R6, R6Class)
 importFrom(fs, path_expand)
 importFrom(rlang, abort)
 import(testthat)
 importFrom(iterators, iter)
-importFrom(rjson, fromJSON)
 
