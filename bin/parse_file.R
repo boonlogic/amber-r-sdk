@@ -1,8 +1,11 @@
 suppressPackageStartupMessages(library(tidyverse))
 
-fileName <- "R/EndpointUsageInfo.R"
+fileName <- "R/sdk.R"
 
 for (fileName in list.files("R", full.names = TRUE)) {
+	if (fileName == "R/sdk.r") {
+		next
+	}
 	f <- readChar(fileName, file.info(fileName)$size)
 	f_split <- str_split(f, "\n", simplify = TRUE)
 	write_file <- FALSE

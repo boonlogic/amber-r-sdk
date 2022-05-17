@@ -543,7 +543,11 @@ AmberClient <- R6::R6Class(
 
         returnObject <- GetStatusResponse$new()
         returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-        returnObject$toJSON()
+        return_json <- returnObject$toJSON()
+
+        GetStatusResponseObject <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"), simplifyVector = FALSE)
+        return_json$pca <- GetStatusResponseObject$pca
+        return_json
 
     },
     #' @description Gets pretrain status
@@ -659,8 +663,8 @@ AmberClient <- R6::R6Class(
             method = "GET", queryParams = queryParams, headerParams = headerParams)
 
         returnObject <- GetRootCauseResponse$new()
-        returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-        returnObject$toJSON()
+        root_cause <- returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+        lapply(root_cause, function(c) unlist(c))
 
     }, 
     #' @description Get the current version numbers for the Amber server
@@ -841,3 +845,5 @@ Private <- R6::R6Class(
     }
   )
 )
+
+

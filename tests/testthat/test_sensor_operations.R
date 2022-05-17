@@ -263,13 +263,12 @@ test_that("stream_sensor_negative", {
 
 test_that("get_root_cause", {
     config <- amber$get_config(sensor_id)
-    expected <- rep(rep(0, length(config[["features"]]) * config[["streamingWindowSize"]]), 2)
+    expected <- list(rep(0, length(config[["features"]]) * config[["streamingWindowSize"]]),
+                     rep(0, length(config[["features"]]) * config[["streamingWindowSize"]]))
     config <- amber$get_root_cause(sensor_id, pattern_list = list(
                                                 rep(1, length(config[["features"]]) * config[["streamingWindowSize"]]),
                                                 rep(0, length(config[["features"]]) * config[["streamingWindowSize"]])))
-    # TODO: FIGURE OUT STUPID ARRAY RETURNS
-    # expect_mapequal(config, expected)
-    expect_true(TRUE)
+    expect_setequal(config, expected)
 })
 
 test_that("get_root_cause_negative", {
