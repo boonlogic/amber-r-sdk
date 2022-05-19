@@ -13,8 +13,7 @@ Imports: httr,
 		 rlang,
 		 testthat,
 		 iterators
-Suggests: devtools
-		  testthat
+Suggests: devtools,
 		  stringr
 Encoding: UTF-8
 License: MIT + file LICENSE

@@ -4,14 +4,14 @@ if (!("renv" %in% installed.packages())) {
 
 renv::init()
 
-packages <- list("testthat",
-				 "devtools",
-				 "stringr")
+# packages <- list("testthat",
+# 				 "devtools",
+# 				 "stringr")
 
-for (package in packages) {
-	if (!(package %in% installed.packages())) {
-		install.packages(package, repos = "https://repo.miserver.it.umich.edu/cran/")
-	}
-}
+# for (package in packages) {
+# 	if (!(package %in% installed.packages())) {
+# 		install.packages(package, repos = "https://repo.miserver.it.umich.edu/cran/")
+# 	}
+# }
 
-renv::snapshot()
+# renv::snapshot()
