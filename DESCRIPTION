@@ -13,6 +13,9 @@ Imports: httr,
 		 rlang,
 		 testthat,
 		 iterators
+Suggests: devtools
+		  testthat
+		  stringr
 Encoding: UTF-8
 License: MIT + file LICENSE
 RoxygenNote: 7.1.2
