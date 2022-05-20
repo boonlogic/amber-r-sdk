@@ -11,10 +11,11 @@ Imports: httr,
 		 R6,
 		 fs,
 		 rlang,
-		 testthat,
 		 iterators
 Suggests: devtools,
-		  stringr
+		  stringr,
+		  testthat,
+		  botor
 Encoding: UTF-8
 License: MIT + file LICENSE
 RoxygenNote: 7.1.2

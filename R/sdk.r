@@ -402,7 +402,7 @@ AmberClient <- R6::R6Class(
 
         returnObject <- PutConfigResponse$new()
         returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-        returnObject$toJSON()
+        returnObject$toJSON()$streaming
 
     },
     #' @description Get the configuration for the given sensor
@@ -607,12 +607,12 @@ AmberClient <- R6::R6Class(
         } else {
           continue <- TRUE
           while (continue) {
-            result <- self$get_pretrain_state(sensor_id)
-            if (result$state == "Pretraining") {
+            results <- self$get_pretrain_state(sensor_id)
+            if (results$state == "Pretraining") {
               Sys.sleep(5)
             } else {
               continue <- FALSE
-              result
+              return(results)
             }
           }
         }

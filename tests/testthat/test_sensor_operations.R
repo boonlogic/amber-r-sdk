@@ -308,23 +308,22 @@ test_that("get_pretrain_state_negative", {
 test_that("pretrain_sensor", {
     data <- as.list(read.csv("output_current.csv"))
 
-    expect_true(TRUE)
-    # TODO empty response from server error
-    # results <- amber$pretrain_sensor(sensor_id, data, block = TRUE)
-    # expect_equal(results$state, "Pretrained")
+    # TODO empty response from server error for on prem
+    results <- amber$pretrain_sensor(sensor_id, data, block = TRUE)
+    expect_equal(results$state, "Pretrained")
 
-    # results <- amber$pretrain_sensor(sensor_id, data, block = FALSE)
-    # expect_true("Pretraining" == results$state || "Pretrained" == results$state)
-    # continue <- TRUE
-    # while (continue) {
-    #     result <- self$get_pretrain_state(sensor_id)
-    #     if (result$state == "Pretraining") {
-    #       Sys.sleep(5)
-    #     } else {
-    #       continue <- FALSE
-    #     }
-    # }
-    # expect_equal(results$state, "Pretrained")
+    results <- amber$pretrain_sensor(sensor_id, data, block = FALSE)
+    expect_true("Pretraining" == results$state || "Pretrained" == results$state)
+    continue <- TRUE
+    while (continue) {
+        results <- amber$get_pretrain_state(sensor_id)
+        if (results$state == "Pretraining") {
+          Sys.sleep(5)
+        } else {
+          continue <- FALSE
+        }
+    }
+    expect_equal(results$state, "Pretrained")
 })
 
 test_that("pretrain_sesnor_negative", {
@@ -342,13 +341,13 @@ test_that("enable_learning", {
                 "learningMaxSamples" = 1000000
                 )
     expect_true(TRUE)
-    # resp <- amber$enable_learning(sensor_id, anomaly_history_window = 1000,
-    #                               learning_rate_numerator = 10,
-    #                               learning_rate_denominator = 10000,
-    #                               learning_max_clusters = 1000,
-    #                               learning_max_samples = 1000000
-    #                               )
-    # expect_mapequal(resp, exp)
+    resp <- amber$enable_learning(sensor_id, anomaly_history_window = 1000,
+                                  learning_rate_numerator = 10,
+                                  learning_rate_denominator = 10000,
+                                  learning_max_clusters = 1000,
+                                  learning_max_samples = 1000000
+                                  )
+    expect_mapequal(resp, exp)
 })
 
 test_that("enable_learning_negative", {
