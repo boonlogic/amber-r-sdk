@@ -14,8 +14,7 @@ Imports: httr,
 		 iterators
 Suggests: devtools,
 		  stringr,
-		  testthat,
-		  botor
+		  testthat
 Encoding: UTF-8
 License: MIT + file LICENSE
 RoxygenNote: 7.1.2
