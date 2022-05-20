@@ -11,7 +11,9 @@ Imports: httr,
 		 R6,
 		 fs,
 		 rlang,
-		 iterators
+		 iterators,
+		 botor,
+		 base64enc
 Suggests: devtools,
 		  stringr,
 		  testthat

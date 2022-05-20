@@ -70,4 +70,5 @@ importFrom(fs, path_expand)
 importFrom(rlang, abort)
 import(testthat)
 importFrom(iterators, iter)
-
+import(botor)
+import(base64enc)
