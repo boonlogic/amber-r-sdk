@@ -1,3 +1,7 @@
+if (!("renv" %in% installed.packages())) {
+	install.packages("testthat", repos = "https://repo.miserver.it.umich.edu/cran/")
+}
+
 library(testthat)
 library(BoonAmber)
 

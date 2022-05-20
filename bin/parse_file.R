@@ -1,3 +1,6 @@
+if (!("renv" %in% installed.packages())) {
+	install.packages("stringr", repos = "https://repo.miserver.it.umich.edu/cran/")
+}
 library(stringr)
 
 fileName <- "R/EndpointUsageInfo.R"

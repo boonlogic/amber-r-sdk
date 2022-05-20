@@ -12,11 +12,8 @@ Imports: httr,
 		 fs,
 		 rlang,
 		 iterators,
-		 botor,
 		 base64enc
-Suggests: devtools,
-		  stringr,
-		  testthat
+Suggests: devtools
 Encoding: UTF-8
 License: MIT + file LICENSE
 RoxygenNote: 7.1.2

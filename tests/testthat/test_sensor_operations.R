@@ -1,3 +1,5 @@
+source("secrets.R")
+
 create_amber_client <- function() {
     amber_license_file <- NULL
     amber_license_id <- NULL
@@ -18,6 +20,7 @@ create_amber_client <- function() {
     if (!is.null(amber_license_file)) {
         AmberClient$new(amber_license_id, amber_license_file)
     } else {
+        # secret_list <- get_secrets()
         # TODO: secrets
         # license_profile
         # Sys.setenv("AMBER_USERNAME" = license_profile["username"],
