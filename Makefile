@@ -30,12 +30,11 @@ build: init
 test:
 	make test-default
 
-test-%:
-	Rscript -e 'renv::restore()' && \
+test-%: 
 	AMBER_TEST_LICENSE_ID=$* Rscript -e 'devtools::test(reporter = c("summary", "fail"))'
+# 	Rscript -e 'renv::restore()' && \
 
 test-local: test-env-check
-	Rscript -e 'renv::restore()' && \
 	Rscript -e 'devtools::test(reporter = c("summary", "fail"))'
 
 test-env-check:

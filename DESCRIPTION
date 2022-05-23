@@ -13,7 +13,8 @@ Imports: httr,
 		 rlang,
 		 iterators,
 		 base64enc
-Suggests: devtools
+Suggests: devtools,
+		  stringr
 Encoding: UTF-8
 License: MIT + file LICENSE
 RoxygenNote: 7.1.2
