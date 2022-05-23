@@ -1,6 +1,4 @@
-# library("botor")
-library("base64enc")
-
+# need botor
 get_secrets = function() {
 	secrete_name <- "amber-test-users"
 	region_name <- "us-east-1"
