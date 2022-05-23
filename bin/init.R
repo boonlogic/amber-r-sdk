@@ -24,4 +24,4 @@ renv::init()
 # 	}
 # }
 
-renv::snapshot()
+# renv::snapshot()
