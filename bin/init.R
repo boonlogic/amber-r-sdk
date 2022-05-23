@@ -2,8 +2,6 @@ if (!("renv" %in% installed.packages())) {
 	install.packages("renv", repos = "https://repo.miserver.it.umich.edu/cran/")
 }
 
-print(renv::dependencies())
-
 renv::init()
 
 # packages <- list("testthat",
