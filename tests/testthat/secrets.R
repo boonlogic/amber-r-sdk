@@ -1,4 +1,5 @@
-# need botor
+library("botor")
+
 get_secrets = function() {
 	secrete_name <- "amber-test-users"
 	region_name <- "us-east-1"
