@@ -3,7 +3,6 @@
 .PHONY: test format format-check clean generate-client docs go-check
 
 init:
-	Rscript -e "R.Version()"
 	Rscript bin/init.R
 
 format-check: ## check for format errors
