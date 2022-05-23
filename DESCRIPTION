@@ -11,7 +11,8 @@ Imports: httr,
 		 R6,
 		 fs,
 		 rlang,
-		 iterators
+		 iterators,
+		 base64enc
 Suggests: devtools
 Encoding: UTF-8
 License: MIT + file LICENSE
