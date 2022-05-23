@@ -1,10 +1,10 @@
-library("botor")
+# library("botor")
 
 get_secrets = function() {
 	secrete_name <- "amber-test-users"
 	region_name <- "us-east-1"
 
-	session <- botor::botor(region_name = region_name)
+	# session <- botor::botor(region_name = region_name)
 	client <- session$client(service_name = "secretsmanager")
 	print(names(client))
 

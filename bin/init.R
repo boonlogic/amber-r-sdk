@@ -22,4 +22,4 @@ for (package in packages) {
 	}
 }
 
-# renv::snapshot()
+renv::snapshot()
