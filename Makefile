@@ -23,10 +23,6 @@ build: init
 	R CMD build .
 	R CMD check BoonAmber*.tar.gz --no-manual
 
-# test-v1, test-v1next, test-dev, test-qa, test-aoc, test-oap
-# add additional .license files in test directory to expand / customize tests
-# test-%: 
-# 	AMBER_TEST_LICENSE_ID=$* go test -timeout 30m -v -coverprofile .coverage.out .
 test:
 	make test-default
 
