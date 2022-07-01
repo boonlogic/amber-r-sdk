@@ -9,6 +9,8 @@
 #' PostPretrainResponse Class
 #'
 #' @field state 
+#' @field amberTransaction 
+#' @field amberChunk 
 #' @field message 
 #'
 #' @importFrom R6 R6Class
@@ -18,11 +20,21 @@ PostPretrainResponse <- R6::R6Class(
   'PostPretrainResponse',
   public = list(
     `state` = NULL,
+    `amberTransaction` = NULL,
+    `amberChunk` = NULL,
     `message` = NULL,
-    initialize = function(`state`, `message`){
+    initialize = function(`state`, `amberTransaction`, `amberChunk`, `message`){
       if (!missing(`state`)) {
         stopifnot(is.character(`state`), length(`state`) == 1)
         self$`state` <- `state`
+      }
+      if (!missing(`amberTransaction`)) {
+        stopifnot(is.character(`amberTransaction`), length(`amberTransaction`) == 1)
+        self$`amberTransaction` <- `amberTransaction`
+      }
+      if (!missing(`amberChunk`)) {
+        stopifnot(is.character(`amberChunk`), length(`amberChunk`) == 1)
+        self$`amberChunk` <- `amberChunk`
       }
       if (!missing(`message`)) {
         stopifnot(is.character(`message`), length(`message`) == 1)
@@ -33,6 +45,12 @@ PostPretrainResponse <- R6::R6Class(
       PostPretrainResponseObject <- list()
       if (!is.null(self$`state`)) {
         PostPretrainResponseObject[['state']] <- self$`state`
+      }
+      if (!is.null(self$`amberTransaction`)) {
+        PostPretrainResponseObject[['amberTransaction']] <- self$`amberTransaction`
+      }
+      if (!is.null(self$`amberChunk`)) {
+        PostPretrainResponseObject[['amberChunk']] <- self$`amberChunk`
       }
       if (!is.null(self$`message`)) {
         PostPretrainResponseObject[['message']] <- self$`message`
@@ -45,6 +63,12 @@ PostPretrainResponse <- R6::R6Class(
       if (!is.null(PostPretrainResponseObject$`state`)) {
         self$`state` <- PostPretrainResponseObject$`state`
       }
+      if (!is.null(PostPretrainResponseObject$`amberTransaction`)) {
+        self$`amberTransaction` <- PostPretrainResponseObject$`amberTransaction`
+      }
+      if (!is.null(PostPretrainResponseObject$`amberChunk`)) {
+        self$`amberChunk` <- PostPretrainResponseObject$`amberChunk`
+      }
       if (!is.null(PostPretrainResponseObject$`message`)) {
         self$`message` <- PostPretrainResponseObject$`message`
       }
@@ -53,15 +77,21 @@ PostPretrainResponse <- R6::R6Class(
        sprintf(
         '{
            "state": %s,
+           "amberTransaction": %s,
+           "amberChunk": %s,
            "message": %s
         }',
         self$`state`,
+        self$`amberTransaction`,
+        self$`amberChunk`,
         self$`message`
       )
     },
     fromJSONString = function(PostPretrainResponseJson) {
       PostPretrainResponseObject <- jsonlite::fromJSON(PostPretrainResponseJson, simplifyVector = FALSE)
       self$`state` <- PostPretrainResponseObject$`state`
+      self$`amberTransaction` <- PostPretrainResponseObject$`amberTransaction`
+      self$`amberChunk` <- PostPretrainResponseObject$`amberChunk`
       self$`message` <- PostPretrainResponseObject$`message`
     }
   )

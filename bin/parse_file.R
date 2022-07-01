@@ -8,10 +8,22 @@ fileName <- "R/EndpointUsageInfo.R"
 for (fileName in list.files("R", full.names = TRUE)) {
 	if (fileName == "R/sdk.r") {
 		f <- readChar("NAMESPACE", file.info("NAMESPACE")$size)
-		f <- paste0(f, "export(AmberClient)\n")
-		f <- paste0(f, "\n",
-					   "import(httr)\nimportFrom(jsonlite, fromJSON)\nimportFrom(jsonlite, toJSON)\nimportFrom(R6, R6Class)\n",
-					   "importFrom(fs, path_expand)\nimportFrom(rlang, abort)\nimport(testthat)\nimportFrom(iterators, iter)\n")
+		f_split <- str_split(f, "\n", simplify = TRUE)
+		request_bool <- str_detect(f_split, "Request")
+		request_str <- f_split[which(request_bool)]
+
+		comment_bool <- str_detect(f_split, "\\#")
+		comment_str <- f_split[which(comment_bool)]
+
+		f <- paste0(paste0(comment_str, collapse="\n"), "\n\n", paste0(request_str, collapse="\n"))
+
+		if (!grepl(f, "AmberClient", fixed = TRUE)) {
+			f <- paste0(f, "\n\nexport(AmberClient)\n")
+			f <- paste0(f, "\n",
+						   "import(httr)\nimportFrom(jsonlite, fromJSON)\nimportFrom(jsonlite, toJSON)\nimportFrom(R6, R6Class)\n",
+						   "importFrom(fs, path_expand)\nimportFrom(rlang, abort)\n")
+		}
+
 		writeLines(f, "NAMESPACE")
 		next
 	}

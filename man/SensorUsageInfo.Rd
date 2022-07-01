@@ -13,6 +13,8 @@ SensorUsageInfo Class
 \describe{
 \item{\code{postConfig}}{}
 
+\item{\code{postOutage}}{}
+
 \item{\code{postStream}}{}
 
 \item{\code{putSensor}}{}
@@ -51,6 +53,7 @@ SensorUsageInfo Class
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{SensorUsageInfo$new(
   postConfig,
+  postOutage,
   postStream,
   putSensor,
   getSensor,

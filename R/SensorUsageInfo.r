@@ -9,6 +9,7 @@
 #' SensorUsageInfo Class
 #'
 #' @field postConfig 
+#' @field postOutage 
 #' @field postStream 
 #' @field putSensor 
 #' @field getSensor 
@@ -26,6 +27,7 @@ SensorUsageInfo <- R6::R6Class(
   'SensorUsageInfo',
   public = list(
     `postConfig` = NULL,
+    `postOutage` = NULL,
     `postStream` = NULL,
     `putSensor` = NULL,
     `getSensor` = NULL,
@@ -35,10 +37,14 @@ SensorUsageInfo <- R6::R6Class(
     `getAmberSummary` = NULL,
     `postPretrain` = NULL,
     `getPretrain` = NULL,
-    initialize = function(`postConfig`, `postStream`, `putSensor`, `getSensor`, `getConfig`, `getStatus`, `getRootCause`, `getAmberSummary`, `postPretrain`, `getPretrain`){
+    initialize = function(`postConfig`, `postOutage`, `postStream`, `putSensor`, `getSensor`, `getConfig`, `getStatus`, `getRootCause`, `getAmberSummary`, `postPretrain`, `getPretrain`){
       if (!missing(`postConfig`)) {
         stopifnot(R6::is.R6(`postConfig`))
         self$`postConfig` <- `postConfig`
+      }
+      if (!missing(`postOutage`)) {
+        stopifnot(R6::is.R6(`postOutage`))
+        self$`postOutage` <- `postOutage`
       }
       if (!missing(`postStream`)) {
         stopifnot(R6::is.R6(`postStream`))
@@ -82,6 +88,9 @@ SensorUsageInfo <- R6::R6Class(
       if (!is.null(self$`postConfig`)) {
         SensorUsageInfoObject[['postConfig']] <- self$`postConfig`$toJSON()
       }
+      if (!is.null(self$`postOutage`)) {
+        SensorUsageInfoObject[['postOutage']] <- self$`postOutage`$toJSON()
+      }
       if (!is.null(self$`postStream`)) {
         SensorUsageInfoObject[['postStream']] <- self$`postStream`$toJSON()
       }
@@ -118,6 +127,11 @@ SensorUsageInfo <- R6::R6Class(
         postConfigObject <- EndpointUsageInfo$new()
         postConfigObject$fromJSON(jsonlite::toJSON(SensorUsageInfoObject$postConfig, auto_unbox = TRUE))
         self$`postConfig` <- postConfigObject
+      }
+      if (!is.null(SensorUsageInfoObject$`postOutage`)) {
+        postOutageObject <- EndpointUsageInfo$new()
+        postOutageObject$fromJSON(jsonlite::toJSON(SensorUsageInfoObject$postOutage, auto_unbox = TRUE))
+        self$`postOutage` <- postOutageObject
       }
       if (!is.null(SensorUsageInfoObject$`postStream`)) {
         postStreamObject <- StreamingEndpointUsageInfo$new()
@@ -169,6 +183,7 @@ SensorUsageInfo <- R6::R6Class(
        sprintf(
         '{
            "postConfig": %s,
+           "postOutage": %s,
            "postStream": %s,
            "putSensor": %s,
            "getSensor": %s,
@@ -180,6 +195,7 @@ SensorUsageInfo <- R6::R6Class(
            "getPretrain": %s
         }',
         self$`postConfig`$toJSON(),
+        self$`postOutage`$toJSON(),
         self$`postStream`$toJSON(),
         self$`putSensor`$toJSON(),
         self$`getSensor`$toJSON(),
@@ -195,6 +211,8 @@ SensorUsageInfo <- R6::R6Class(
       SensorUsageInfoObject <- jsonlite::fromJSON(SensorUsageInfoJson, simplifyVector = FALSE)
       EndpointUsageInfoObject <- EndpointUsageInfo$new()
       self$`postConfig` <- EndpointUsageInfoObject$fromJSON(jsonlite::toJSON(SensorUsageInfoObject$postConfig, auto_unbox = TRUE))
+      EndpointUsageInfoObject <- EndpointUsageInfo$new()
+      self$`postOutage` <- EndpointUsageInfoObject$fromJSON(jsonlite::toJSON(SensorUsageInfoObject$postOutage, auto_unbox = TRUE))
       StreamingEndpointUsageInfoObject <- StreamingEndpointUsageInfo$new()
       self$`postStream` <- StreamingEndpointUsageInfoObject$fromJSON(jsonlite::toJSON(SensorUsageInfoObject$postStream, auto_unbox = TRUE))
       EndpointUsageInfoObject <- EndpointUsageInfo$new()

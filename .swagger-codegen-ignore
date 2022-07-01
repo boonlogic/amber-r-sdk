@@ -9,3 +9,4 @@ R/DefaultApi.r
 .travis.yml
 git_push.sh
 .Rbuildignore
+README.md
