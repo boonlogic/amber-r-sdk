@@ -26,7 +26,7 @@ build: init
 test:
 	make test-default
 
-test-%: 
+test-%:
 	Rscript -e 'renv::restore()' && \
 	AMBER_TEST_LICENSE_ID=$* Rscript -e 'devtools::test(reporter = c("summary", "fail"))'
 

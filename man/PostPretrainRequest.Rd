@@ -13,6 +13,8 @@ PostPretrainRequest Class
 \describe{
 \item{\code{data}}{}
 
+\item{\code{format}}{}
+
 \item{\code{autotuneConfig}}{}
 }
 \if{html}{\out{</div>}}
@@ -33,7 +35,7 @@ PostPretrainRequest Class
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PostPretrainRequest$new(data, autotuneConfig)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PostPretrainRequest$new(data, format, autotuneConfig)}\if{html}{\out{</div>}}
 }
 
 }

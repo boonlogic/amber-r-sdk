@@ -22,6 +22,7 @@ stages:
   - self-test
   - test-setup
   - test
+  - deploy-package
   
 build:
   stage: build
@@ -103,3 +104,14 @@ test-aoc:
     - export AMBER_TEST_LICENSE_FILE=${PWD}/Amber.license
     - export AMBER_TEST_LICENSE_ID=aoc
     - make test-local
+
+package:
+  stage: deploy-package
+  tags:
+    - expert-docker
+  script:
+    - cd ${CI_PROJECT_DIR}/ci-root/packages/amber-r-sdk/amber-r-sdk
+    - make build
+  artifacts:
+    paths:
+      - ci-root/packages/amber-r-sdk/amber-r-sdk

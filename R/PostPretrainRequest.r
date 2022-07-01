@@ -9,6 +9,7 @@
 #' PostPretrainRequest Class
 #'
 #' @field data 
+#' @field format 
 #' @field autotuneConfig 
 #'
 #' @importFrom R6 R6Class
@@ -18,11 +19,16 @@ PostPretrainRequest <- R6::R6Class(
   'PostPretrainRequest',
   public = list(
     `data` = NULL,
+    `format` = NULL,
     `autotuneConfig` = NULL,
-    initialize = function(`data`, `autotuneConfig`){
+    initialize = function(`data`, `format`, `autotuneConfig`){
       if (!missing(`data`)) {
         stopifnot(is.character(`data`), length(`data`) == 1)
         self$`data` <- `data`
+      }
+      if (!missing(`format`)) {
+        stopifnot(is.character(`format`), length(`format`) == 1)
+        self$`format` <- `format`
       }
       if (!missing(`autotuneConfig`)) {
         self$`autotuneConfig` <- `autotuneConfig`
@@ -32,6 +38,9 @@ PostPretrainRequest <- R6::R6Class(
       PostPretrainRequestObject <- list()
       if (!is.null(self$`data`)) {
         PostPretrainRequestObject[['data']] <- self$`data`
+      }
+      if (!is.null(self$`format`)) {
+        PostPretrainRequestObject[['format']] <- self$`format`
       }
       if (!is.null(self$`autotuneConfig`)) {
         PostPretrainRequestObject[['autotuneConfig']] <- self$`autotuneConfig`
@@ -44,6 +53,9 @@ PostPretrainRequest <- R6::R6Class(
       if (!is.null(PostPretrainRequestObject$`data`)) {
         self$`data` <- PostPretrainRequestObject$`data`
       }
+      if (!is.null(PostPretrainRequestObject$`format`)) {
+        self$`format` <- PostPretrainRequestObject$`format`
+      }
       if (!is.null(PostPretrainRequestObject$`autotuneConfig`)) {
         self$`autotuneConfig` <- PostPretrainRequestObject$`autotuneConfig`
       }
@@ -52,15 +64,18 @@ PostPretrainRequest <- R6::R6Class(
        sprintf(
         '{
            "data": %s,
+           "format": %s,
            "autotuneConfig": %s
         }',
         self$`data`,
+        self$`format`,
         self$`autotuneConfig`
       )
     },
     fromJSONString = function(PostPretrainRequestJson) {
       PostPretrainRequestObject <- jsonlite::fromJSON(PostPretrainRequestJson, simplifyVector = FALSE)
       self$`data` <- PostPretrainRequestObject$`data`
+      self$`format` <- PostPretrainRequestObject$`format`
       self$`autotuneConfig` <- PostPretrainRequestObject$`autotuneConfig`
     }
   )

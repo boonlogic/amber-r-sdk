@@ -10,11 +10,10 @@ Imports: httr,
 		 jsonlite,
 		 R6,
 		 fs,
-		 rlang,
-		 iterators,
-		 base64enc
+		 rlang
 Suggests: devtools,
-		  stringr
+		  stringr,
+		  testthat
 Encoding: UTF-8
 License: MIT + file LICENSE
 RoxygenNote: 7.1.2
