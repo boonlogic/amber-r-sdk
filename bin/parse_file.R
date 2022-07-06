@@ -7,6 +7,7 @@ fileName <- "R/EndpointUsageInfo.R"
 
 for (fileName in list.files("R", full.names = TRUE)) {
 	if (fileName == "R/sdk.r") {
+
 		f <- readChar("NAMESPACE", file.info("NAMESPACE")$size)
 		f_split <- str_split(f, "\n", simplify = TRUE)
 		request_bool <- str_detect(f_split, "Request")
@@ -20,8 +21,9 @@ for (fileName in list.files("R", full.names = TRUE)) {
 		if (!grepl(f, "AmberClient", fixed = TRUE)) {
 			f <- paste0(f, "\n\nexport(AmberClient)\n")
 			f <- paste0(f, "\n",
-						   "import(httr)\nimportFrom(jsonlite, fromJSON)\nimportFrom(jsonlite, toJSON)\nimportFrom(R6, R6Class)\n",
-						   "importFrom(fs, path_expand)\nimportFrom(rlang, abort)\n")
+			   "import(httr)\nimportFrom(jsonlite, fromJSON)\nimportFrom(jsonlite, toJSON)\n",
+			   "importFrom(R6, R6Class)\nimportFrom(fs, path_expand)\nimportFrom(rlang, abort)\n",
+			   "importFrom(iterators, iter)\nimportFrom(base64enc, base64decode)\n")
 		}
 
 		writeLines(f, "NAMESPACE")

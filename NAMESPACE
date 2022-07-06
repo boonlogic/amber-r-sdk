@@ -18,4 +18,6 @@ importFrom(jsonlite, toJSON)
 importFrom(R6, R6Class)
 importFrom(fs, path_expand)
 importFrom(rlang, abort)
+importFrom(iterators, iter)
+importFrom(base64enc, base64decode)
 
