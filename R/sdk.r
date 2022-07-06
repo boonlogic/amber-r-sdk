@@ -81,10 +81,16 @@ AmberClient <- R6::R6Class(
         private <- Private$new()
 
         self$license_file <- license_file
-        self$license_file <- Sys.getenv("AMBER_LICENSE_FILE", unset = self$license_file)
+        self$license_file <- Sys.getenv("AMBER_LICENSE_FILE")
+        if(self$license_file == "") {
+          self$license_file <- license_file
+        }
 
         self$license_id <- license_id
-        self$license_id <- Sys.getenv("AMBER_LICENSE_ID", unset = self$license_id)
+        self$license_id <- Sys.getenv("AMBER_LICENSE_ID")
+        if(self$license_id == "") {
+          self$license_id <- license_id
+        }
 
         if (!is.null(license_file)) {
           license_path <- fs::path_expand(self$license_file)

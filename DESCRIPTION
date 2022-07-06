@@ -10,7 +10,9 @@ Imports: httr,
 		 jsonlite,
 		 R6,
 		 fs,
-		 rlang
+		 rlang,
+		 iterators,
+		 base64enc
 Suggests: devtools,
 		  stringr,
 		  testthat
