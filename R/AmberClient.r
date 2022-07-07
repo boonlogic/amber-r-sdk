@@ -188,7 +188,7 @@ AmberClient <- R6::R6Class(
         body <- NULL
 
         urlPath <- "/sensors"
-        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+        resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams, body = body)
 
         returnObject <- GetSensorsResponse$new()
@@ -215,7 +215,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/sensor"
-        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+        resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body)
 
@@ -235,7 +235,7 @@ AmberClient <- R6::R6Class(
         body <- list(`label` = label)
 
         urlPath <- "/sensor"
-        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+        resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "POST", queryParams = queryParams, headerParams = headerParams,
             body = body)
 
@@ -260,7 +260,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/sensor"
-        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+        resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "PUT", queryParams = queryParams, headerParams = headerParams,
             body = body)
 
@@ -322,7 +322,7 @@ AmberClient <- R6::R6Class(
         # body["features"] <- features
 
         urlPath <- "/config"
-        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+        resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "POST", queryParams = queryParams, headerParams = headerParams,
             body = body)
 
@@ -359,7 +359,7 @@ AmberClient <- R6::R6Class(
 
         body <- list(features = features)
         urlPath <- "/config"
-        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+        resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "PUT", queryParams = queryParams, headerParams = headerParams,
             body = body)
 
@@ -407,7 +407,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/config"
-        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+        resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "PUT", queryParams = queryParams, headerParams = headerParams,
             body = body)
 
@@ -431,7 +431,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/config"
-        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+        resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body)
 
@@ -454,7 +454,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/sensor"
-        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+        resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "DELETE", queryParams = queryParams, headerParams = headerParams,
             body = body)
 
@@ -489,7 +489,7 @@ AmberClient <- R6::R6Class(
         body["data"] <- data_csv
 
         urlPath <- "/stream"
-        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+        resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "POST", queryParams = queryParams, headerParams = headerParams,
             body = body)
 
@@ -524,7 +524,7 @@ AmberClient <- R6::R6Class(
         body <- list("vector" = vector, "submitRule" = submit)
 
         urlPath <- "/stream"
-        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+        resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "PUT", queryParams = queryParams, headerParams = headerParams,
             body = body)
 
@@ -548,7 +548,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/status"
-        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+        resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body)
 
@@ -576,7 +576,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/pretrain"
-        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+        resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body)
 
@@ -607,7 +607,7 @@ AmberClient <- R6::R6Class(
         body["autotuneConfig"] <- autotune_config
 
         urlPath <- "/pretrain"
-        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+        resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "POST", queryParams = queryParams, headerParams = headerParams,
             body = body)
 
@@ -670,7 +670,7 @@ AmberClient <- R6::R6Class(
         }
 
         urlPath <- "/rootCause"
-        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+        resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams)
 
         returnObject <- GetRootCauseResponse$new()
@@ -687,7 +687,7 @@ AmberClient <- R6::R6Class(
         body <- NULL
 
         urlPath <- "/version"
-        resp <- self$restPrivate$callApi(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
+        resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),
             method = "GET", queryParams = queryParams, headerParams = headerParams,
             body = body)
 
@@ -698,163 +698,3 @@ AmberClient <- R6::R6Class(
     }
   )
 )
-
-Private <- R6::R6Class(
-  "Private",
-  public = list(
-    `user_agent` = "Boon Logic / amber-r-sdk / requests",
-    verify = TRUE,
-    cert = NULL,
-    timeout = 360,
-    token = NULL,
-    reauthTime = Sys.time(),
-    licenseProfile =  NULL,
-    authenticate = function() {
-      tIn = Sys.time()
-      if (self$reauthTime < tIn) {
-        queryParams <- c()
-        headerParams = c(`Content-Type` = "application/json",
-                         `User-Agent` = self$`user_agent`)
-        body <- list(`username` = self$licenseProfile$username,
-                  `password` = self$licenseProfile$password)
-
-        headers <- httr::add_headers(headerParams)
-
-        urlPath <- "/oauth2"
-        resp <- httr::POST(paste0(self$licenseProfile["oauth-server"], urlPath),
-                           queryParams, headers, body = body, encode = "json")
-
-        if (httr::status_code(resp) >= 200 && httr::status_code(resp) <= 299) {
-          returnObject <- PostAuth2Response$new()
-          returnObject$fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
-          self$token <- returnObject$idToken
-          if (is.null(self$token)) {
-            msg = paste("authentication failed: invalid credentials")
-            rlang::abort(msg, class = "AmberCloudError")
-          }
-          expire_secs = returnObject$`expiresIn`
-          if (is.null(expire_secs)) {
-            msg = paste("authentication failed: missing expiration")
-            rlang::abort(msg, class = "AmberCloudError")
-          }
-          self$reauthTime <- tIn + strtoi(expire_secs) - 60
-
-        } else if (httr::status_code(resp) >= 400 && httr::status_code(resp) <= 599) {
-            msg = httr::content(resp)$message
-            rlang::abort(msg, class = "AmberCloudError")
-        }
-
-      } else {
-        c(TRUE, NULL)
-      }
-
-    }, callApi = function(url, method, queryParams, headerParams, body){
-        if (Sys.time() > self$reauthTime) {
-          self$authenticate()
-        }
-
-        headerParams <- append(headerParams, c(`Authorization` = paste0("Bearer ", self$token),
-                                               `User-Agent` = self$`user_agent`,
-                                               `Content-Type` = "application/json"))
-        headers <- httr::add_headers(headerParams)
-
-        if (method == "GET") {
-            resp <- httr::GET(url, query = queryParams, headers, httr::timeout(self$timeout))
-        }
-        else if (method == "POST") {
-            resp <- httr::POST(url, query = queryParams, headers, body = body, encode = "json", httr::timeout(self$timeout))
-        }
-        else if (method == "PUT") {
-            resp <- httr::PUT(url, query = queryParams, headers, body = body, encode = "json", httr::timeout(self$timeout))
-        }
-        else if (method == "DELETE") {
-            resp <- httr::DELETE(url, query = queryParams, headers, httr::timeout(self$timeout))
-        }
-        else {
-            stop("http method must be `GET`, `POST`, `PUT` or `DELETE`.")
-        }
-
-        if (httr::status_code(resp) < 200 || httr::status_code(resp) >= 300) {
-          msg = httr::content(resp)$message
-          rlang::abort(msg, class = "AmberCloudError")
-        }
-
-        resp
-    }, convert_to_csv = function(data) {
-        ndim <- self$validate_dims(data)
-
-        if (ndim == 0) {
-          data_flat <- list(data)
-        } else if (ndim == 1) {
-          data_flat <- data
-        } else if (ndim == 2) {
-          data_flat <- unlist(data)
-        }
-
-        for (d in data_flat) {
-          if (!is.numeric(d)) {
-              # rlang::abort(paste0("contained ", d, " which is not numeric"), class = "ValueError")
-              rlang::abort("testing fail")
-          }
-        }
-
-        paste(lapply(data_flat, function(d) toString(as.numeric(d))), collapse = ",")
-
-    }, validate_dims = function(data) {
-        # not-iterable data is a single scalar data point
-        if (!self$is.iterable(data)) {
-          return(0)
-        }
-
-        # iterable and unnested data is a 1-d array
-        if (!(TRUE %in% lapply(data, function(x) self$is.iterable(x)))) {
-          if (length(data) == 0) {
-            rlang::abort("empty", class = "ValueError")
-          }
-          return(1)
-        }
-
-        # iterable and nested data is a 2-d array
-        if (FALSE %in% lapply(data, function(x) self$is.iterable(x))) {
-          rlang::abort("Cannot mix nested scalars and iterables", class = "ValueError")
-        }
-
-        # check for irregular arrays
-        subLengths <- lapply(data, function(d) length(d))
-        if (length(unique(subLengths)) > 1) {
-          rlang::abort("nested sublists must have equal lengths")
-        }
-
-        flattened_2d <- unlist(data, recursive = FALSE)
-
-        if (TRUE %in% lapply(flattened_2d, function(x) self$is.iterable(x))) {
-          rlang::abort("Cannot be nested deeper than list-of-lists", class = "ValueError")
-        }
-
-        if (subLengths[[1]] == 0) {
-          rlang::abort("empty", class = "ValueError")
-        }
-
-        return(2)
-
-    }, is.iterable = function(x) {
-        if (is.character(x)) {
-          return(FALSE)
-        }
-
-        value <- TRUE
-        if (identical(lengths(x), as.integer(1))) {  
-          return(FALSE)
-        }
-        tryCatch({
-          iterators::iter(x)
-        }, error = function(c) {
-          value <<- FALSE
-        })
-
-        value
-    }
-  )
-)
-
-
