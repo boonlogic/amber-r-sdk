@@ -5,11 +5,6 @@
         "server": "http://localhost:5007/v1",
         "oauth-server": "http://localhost:5007/v1"
     },
-    "prod": {
-        "username": "elise-prod",
-        "password": "ea98mM*SE2C2",
-        "server": "https://amber.boonlogic.com/v1"
-    },
     "missing-username": {
         "password": "filler-password",
         "server": "https://amber-local.boonlogic.com/dev"
