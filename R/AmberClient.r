@@ -65,6 +65,11 @@
 #'
 #' }
 #'
+#' @examples
+#'
+#' amber <- AmberClient("default", "../tests/testthat/test.Amber.license")
+#' print(amber$get_version())
+#'
 #' @export
 AmberClient <- R6::R6Class(
   "AmberClient",

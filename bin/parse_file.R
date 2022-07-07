@@ -6,7 +6,7 @@ library(stringr)
 fileName <- "R/EndpointUsageInfo.R"
 
 for (fileName in list.files("R", full.names = TRUE)) {
-	if (fileName == "R/sdk.r") {
+	if (fileName == "R/AmberClient.r") {
 
 		f <- readChar("NAMESPACE", file.info("NAMESPACE")$size)
 		f_split <- str_split(f, "\n", simplify = TRUE)
