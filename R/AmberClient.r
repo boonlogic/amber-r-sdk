@@ -291,16 +291,14 @@ AmberClient <- R6::R6Class(
                                    learning_rate_denominator = 10000,
                                    learning_max_clusters = 1000,
                                    learning_max_samples = 1000000,
-                                   features = "") {
+                                   features = NULL,
+                                   override_pv = NULL) {
         queryParams <- list()
         headerParams <- character()
         body <- list()
 
         if (!missing(sensor_id)) {
             headerParams["sensorId"] <- sensor_id
-        }
-        if (is.null(features)) {
-          features <- list()
         }
         if (feature_count%%1 != 0 || feature_count <= 0){
           msg = "invalid 'feature_count': must be a positive integer"
@@ -319,7 +317,17 @@ AmberClient <- R6::R6Class(
         body["learningRateDenominator"] <- learning_rate_denominator
         body["learningMaxClusters"] <- learning_max_clusters
         body["learningMaxSamples"] <- learning_max_samples
-        # body["features"] <- features
+        
+        if (!is.null(features)) {
+          featureObject <- FeatureConfig$new()
+          featureObject$fromJSON(features)
+          body["features"] <- featureObject
+
+        }
+        
+        if (!is.null(override_pv)) {
+          body["percentVariationOverride"] <- override_pv
+        }
 
         urlPath <- "/config"
         resp <- self$restPrivate$call_api(url = paste0(self$restPrivate$licenseProfile$server, urlPath),

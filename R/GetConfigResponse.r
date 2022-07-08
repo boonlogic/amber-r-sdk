@@ -18,6 +18,7 @@
 #' @field features 
 #' @field percentVariation 
 #' @field samplesToBuffer 
+#' @field percentVariationOverride 
 #'
 #' @importFrom R6 R6Class
 #' @importFrom jsonlite fromJSON toJSON
@@ -35,7 +36,8 @@ GetConfigResponse <- R6::R6Class(
     `features` = NULL,
     `percentVariation` = NULL,
     `samplesToBuffer` = NULL,
-    initialize = function(`anomalyHistoryWindow`, `learningRateNumerator`, `learningRateDenominator`, `learningMaxClusters`, `learningMaxSamples`, `featureCount`, `streamingWindowSize`, `features`, `percentVariation`, `samplesToBuffer`){
+    `percentVariationOverride` = NULL,
+    initialize = function(`anomalyHistoryWindow`, `learningRateNumerator`, `learningRateDenominator`, `learningMaxClusters`, `learningMaxSamples`, `featureCount`, `streamingWindowSize`, `features`, `percentVariation`, `samplesToBuffer`, `percentVariationOverride`){
       if (!missing(`anomalyHistoryWindow`)) {
         stopifnot(is.numeric(`anomalyHistoryWindow`), length(`anomalyHistoryWindow`) == 1)
         stopifnot(R6::is.R6(`anomalyHistoryWindow`))
@@ -83,6 +85,10 @@ GetConfigResponse <- R6::R6Class(
         stopifnot(R6::is.R6(`samplesToBuffer`))
         self$`samplesToBuffer` <- `samplesToBuffer`
       }
+      if (!missing(`percentVariationOverride`)) {
+        stopifnot(is.numeric(`percentVariationOverride`), length(`percentVariationOverride`) == 1)
+        self$`percentVariationOverride` <- `percentVariationOverride`
+      }
     },
     toJSON = function() {
       GetConfigResponseObject <- list()
@@ -115,6 +121,9 @@ GetConfigResponse <- R6::R6Class(
       }
       if (!is.null(self$`samplesToBuffer`)) {
         GetConfigResponseObject[['samplesToBuffer']] <- self$`samplesToBuffer`
+      }
+      if (!is.null(self$`percentVariationOverride`)) {
+        GetConfigResponseObject[['percentVariationOverride']] <- self$`percentVariationOverride`
       }
 
       GetConfigResponseObject
@@ -155,6 +164,9 @@ GetConfigResponse <- R6::R6Class(
       if (!is.null(GetConfigResponseObject$`samplesToBuffer`)) {
         self$`samplesToBuffer` <- GetConfigResponseObject$samplesToBuffer
       }
+      if (!is.null(GetConfigResponseObject$`percentVariationOverride`)) {
+        self$`percentVariationOverride` <- GetConfigResponseObject$`percentVariationOverride`
+      }
     },
     toJSONString = function() {
        sprintf(
@@ -168,7 +180,8 @@ GetConfigResponse <- R6::R6Class(
            "streamingWindowSize": %d,
            "features": [%s],
            "percentVariation": %d,
-           "samplesToBuffer": %s
+           "samplesToBuffer": %s,
+           "percentVariationOverride": %d
         }',
         self$`anomalyHistoryWindow`,
         self$`learningRateNumerator`,
@@ -179,7 +192,8 @@ GetConfigResponse <- R6::R6Class(
         self$`streamingWindowSize`,
         lapply(self$`features`, function(x) paste(x$toJSON(), sep=",")),
         self$`percentVariation`,
-        self$`samplesToBuffer`
+        self$`samplesToBuffer`,
+        self$`percentVariationOverride`
       )
     },
     fromJSONString = function(GetConfigResponseJson) {
@@ -194,6 +208,7 @@ GetConfigResponse <- R6::R6Class(
       self$`features` <- lapply(GetConfigResponseObject$`features`, function(x) FeatureConfig$new()$fromJSON(jsonlite::toJSON(x, auto_unbox = TRUE)))
       self$`percentVariation` <- GetConfigResponseObject$`percentVariation`
       self$`samplesToBuffer` <- GetConfigResponseObject$samplesToBuffer
+      self$`percentVariationOverride` <- GetConfigResponseObject$`percentVariationOverride`
     }
   )
 )
