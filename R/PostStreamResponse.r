@@ -15,8 +15,6 @@
 #' @field retryCount 
 #' @field streamingWindowSize 
 #' @field totalInferences 
-#' @field lastModified 
-#' @field lastModifiedDelta 
 #' @field RI 
 #' @field SI 
 #' @field AD 
@@ -38,8 +36,6 @@ PostStreamResponse <- R6::R6Class(
     `retryCount` = NULL,
     `streamingWindowSize` = NULL,
     `totalInferences` = NULL,
-    `lastModified` = NULL,
-    `lastModifiedDelta` = NULL,
     `RI` = NULL,
     `SI` = NULL,
     `AD` = NULL,
@@ -47,7 +43,7 @@ PostStreamResponse <- R6::R6Class(
     `AM` = NULL,
     `AW` = NULL,
     `ID` = NULL,
-    initialize = function(`state`, `message`, `progress`, `clusterCount`, `retryCount`, `streamingWindowSize`, `totalInferences`, `lastModified`, `lastModifiedDelta`, `RI`, `SI`, `AD`, `AH`, `AM`, `AW`, `ID`){
+    initialize = function(`state`, `message`, `progress`, `clusterCount`, `retryCount`, `streamingWindowSize`, `totalInferences`, `RI`, `SI`, `AD`, `AH`, `AM`, `AW`, `ID`){
       if (!missing(`state`)) {
         stopifnot(is.character(`state`), length(`state`) == 1)
         self$`state` <- `state`
@@ -80,16 +76,6 @@ PostStreamResponse <- R6::R6Class(
         stopifnot(is.numeric(`totalInferences`), length(`totalInferences`) == 1)
         stopifnot(R6::is.R6(`totalInferences`))
         self$`totalInferences` <- `totalInferences`
-      }
-      if (!missing(`lastModified`)) {
-        stopifnot(is.numeric(`lastModified`), length(`lastModified`) == 1)
-        stopifnot(R6::is.R6(`lastModified`))
-        self$`lastModified` <- `lastModified`
-      }
-      if (!missing(`lastModifiedDelta`)) {
-        stopifnot(is.numeric(`lastModifiedDelta`), length(`lastModifiedDelta`) == 1)
-        stopifnot(R6::is.R6(`lastModifiedDelta`))
-        self$`lastModifiedDelta` <- `lastModifiedDelta`
       }
       if (!missing(`RI`)) {
         stopifnot(R6::is.R6(`RI`))
@@ -143,12 +129,6 @@ PostStreamResponse <- R6::R6Class(
       if (!is.null(self$`totalInferences`)) {
         PostStreamResponseObject[['totalInferences']] <- self$`totalInferences`
       }
-      if (!is.null(self$`lastModified`)) {
-        PostStreamResponseObject[['lastModified']] <- self$`lastModified`
-      }
-      if (!is.null(self$`lastModifiedDelta`)) {
-        PostStreamResponseObject[['lastModifiedDelta']] <- self$`lastModifiedDelta`
-      }
       if (!is.null(self$`RI`)) {
         PostStreamResponseObject[['RI']] <- self$`RI`
       }
@@ -196,12 +176,6 @@ PostStreamResponse <- R6::R6Class(
       if (!is.null(PostStreamResponseObject$`totalInferences`)) {
         self$`totalInferences` <- PostStreamResponseObject$totalInferences
       }
-      if (!is.null(PostStreamResponseObject$`lastModified`)) {
-        self$`lastModified` <- PostStreamResponseObject$lastModified
-      }
-      if (!is.null(PostStreamResponseObject$`lastModifiedDelta`)) {
-        self$`lastModifiedDelta` <- PostStreamResponseObject$lastModifiedDelta
-      }
       if (!is.null(PostStreamResponseObject$`RI`)) {
         self$`RI` <- PostStreamResponseObject$RI
       }
@@ -234,8 +208,6 @@ PostStreamResponse <- R6::R6Class(
            "retryCount": %s,
            "streamingWindowSize": %s,
            "totalInferences": %s,
-           "lastModified": %s,
-           "lastModifiedDelta": %s,
            "RI": %s,
            "SI": %s,
            "AD": %s,
@@ -251,8 +223,6 @@ PostStreamResponse <- R6::R6Class(
         self$`retryCount`,
         self$`streamingWindowSize`,
         self$`totalInferences`,
-        self$`lastModified`,
-        self$`lastModifiedDelta`,
         self$`RI`,
         self$`SI`,
         self$`AD`,
@@ -271,8 +241,6 @@ PostStreamResponse <- R6::R6Class(
       self$`retryCount` <- PostStreamResponseObject$retryCount
       self$`streamingWindowSize` <- PostStreamResponseObject$streamingWindowSize
       self$`totalInferences` <- PostStreamResponseObject$totalInferences
-      self$`lastModified` <- PostStreamResponseObject$lastModified
-      self$`lastModifiedDelta` <- PostStreamResponseObject$lastModifiedDelta
       self$`RI` <- PostStreamResponseObject$RI
       self$`SI` <- PostStreamResponseObject$SI
       self$`AD` <- PostStreamResponseObject$AD
