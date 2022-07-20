@@ -15,6 +15,8 @@
 #' @field retryCount 
 #' @field streamingWindowSize 
 #' @field totalInferences 
+#' @field lastModified 
+#' @field lastModifiedDelta 
 #'
 #' @importFrom R6 R6Class
 #' @importFrom jsonlite fromJSON toJSON
@@ -29,7 +31,9 @@ PostOutageResponse <- R6::R6Class(
     `retryCount` = NULL,
     `streamingWindowSize` = NULL,
     `totalInferences` = NULL,
-    initialize = function(`state`, `message`, `progress`, `clusterCount`, `retryCount`, `streamingWindowSize`, `totalInferences`){
+    `lastModified` = NULL,
+    `lastModifiedDelta` = NULL,
+    initialize = function(`state`, `message`, `progress`, `clusterCount`, `retryCount`, `streamingWindowSize`, `totalInferences`, `lastModified`, `lastModifiedDelta`){
       if (!missing(`state`)) {
         stopifnot(is.character(`state`), length(`state`) == 1)
         self$`state` <- `state`
@@ -63,6 +67,16 @@ PostOutageResponse <- R6::R6Class(
         stopifnot(R6::is.R6(`totalInferences`))
         self$`totalInferences` <- `totalInferences`
       }
+      if (!missing(`lastModified`)) {
+        stopifnot(is.numeric(`lastModified`), length(`lastModified`) == 1)
+        stopifnot(R6::is.R6(`lastModified`))
+        self$`lastModified` <- `lastModified`
+      }
+      if (!missing(`lastModifiedDelta`)) {
+        stopifnot(is.numeric(`lastModifiedDelta`), length(`lastModifiedDelta`) == 1)
+        stopifnot(R6::is.R6(`lastModifiedDelta`))
+        self$`lastModifiedDelta` <- `lastModifiedDelta`
+      }
     },
     toJSON = function() {
       PostOutageResponseObject <- list()
@@ -86,6 +100,12 @@ PostOutageResponse <- R6::R6Class(
       }
       if (!is.null(self$`totalInferences`)) {
         PostOutageResponseObject[['totalInferences']] <- self$`totalInferences`
+      }
+      if (!is.null(self$`lastModified`)) {
+        PostOutageResponseObject[['lastModified']] <- self$`lastModified`
+      }
+      if (!is.null(self$`lastModifiedDelta`)) {
+        PostOutageResponseObject[['lastModifiedDelta']] <- self$`lastModifiedDelta`
       }
 
       PostOutageResponseObject
@@ -113,6 +133,12 @@ PostOutageResponse <- R6::R6Class(
       if (!is.null(PostOutageResponseObject$`totalInferences`)) {
         self$`totalInferences` <- PostOutageResponseObject$totalInferences
       }
+      if (!is.null(PostOutageResponseObject$`lastModified`)) {
+        self$`lastModified` <- PostOutageResponseObject$lastModified
+      }
+      if (!is.null(PostOutageResponseObject$`lastModifiedDelta`)) {
+        self$`lastModifiedDelta` <- PostOutageResponseObject$lastModifiedDelta
+      }
     },
     toJSONString = function() {
        sprintf(
@@ -123,7 +149,9 @@ PostOutageResponse <- R6::R6Class(
            "clusterCount": %s,
            "retryCount": %s,
            "streamingWindowSize": %s,
-           "totalInferences": %s
+           "totalInferences": %s,
+           "lastModified": %s,
+           "lastModifiedDelta": %s
         }',
         self$`state`,
         self$`message`,
@@ -131,7 +159,9 @@ PostOutageResponse <- R6::R6Class(
         self$`clusterCount`,
         self$`retryCount`,
         self$`streamingWindowSize`,
-        self$`totalInferences`
+        self$`totalInferences`,
+        self$`lastModified`,
+        self$`lastModifiedDelta`
       )
     },
     fromJSONString = function(PostOutageResponseJson) {
@@ -143,6 +173,8 @@ PostOutageResponse <- R6::R6Class(
       self$`retryCount` <- PostOutageResponseObject$retryCount
       self$`streamingWindowSize` <- PostOutageResponseObject$streamingWindowSize
       self$`totalInferences` <- PostOutageResponseObject$totalInferences
+      self$`lastModified` <- PostOutageResponseObject$lastModified
+      self$`lastModifiedDelta` <- PostOutageResponseObject$lastModifiedDelta
     }
   )
 )
